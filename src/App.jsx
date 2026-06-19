@@ -252,9 +252,8 @@ export default function App() {
         {/* Top Brand Logo Container */}
         <div className="flex flex-col items-center gap-1 cursor-pointer" onClick={() => navigateTo('hero')}>
           <div className="w-10 h-10 flex items-center justify-center bg-brand-red text-white font-outfit font-black text-lg">
-            JV
+            ZG
           </div>
-          <span className="text-[9px] text-neutral-500 font-medium tracking-widest mt-1">START</span>
         </div>
 
         {/* Middle Navigation Icons */}
@@ -303,19 +302,19 @@ export default function App() {
               <div className="max-w-xl">
                 {/* Staggered Serif Word Reveals (IvyPresto heading style) */}
                 <div className="mb-6 font-serif italic">
-                  <div className="line-mask block text-5xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
                     <span className="inline-block animate-reveal">
                       Strategy<span className="text-brand-red">.</span>
                     </span>
                   </div>
                   <br />
-                  <div className="line-mask block text-5xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
                     <span className="inline-block animate-reveal stagger-1">
                       Creativity<span className="text-brand-red">.</span>
                     </span>
                   </div>
                   <br />
-                  <div className="line-mask block text-5xl md:text-7xl lg:text-8xl tracking-tight text-neutral-400 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-neutral-400 leading-none">
                     <span className="inline-block animate-reveal stagger-2">
                       Results<span className="text-brand-red">.</span>
                     </span>
@@ -363,11 +362,11 @@ export default function App() {
               <img
                 src="/md_hero_portrait.jpg"
                 alt="Julian Vance Portrait"
-                className="absolute inset-0 w-full h-full object-cover object-center grayscale hover:grayscale-0 transition-all duration-1000 scale-102"
+                className="absolute inset-0 w-full h-full object-cover object-[80%_center] transition-all duration-1000 scale-102"
               />
 
               {/* Editorial bottom detail overlay */}
-              <div className="absolute bottom-10 right-10 z-20 text-right font-outfit select-none pointer-events-none hidden lg:block">
+              <div className="absolute bottom-10 right-25 z-20 text-right font-outfit select-none pointer-events-none hidden lg:block">
                 <span className="text-[10px] tracking-[0.3em] text-neutral-500 font-bold uppercase block mb-1">FOUNDER</span>
                 <span className="text-lg text-white font-extrabold tracking-widest uppercase">ZEROGRAVITY GROUP.</span>
                 <span className="block text-brand-red text-xs mt-1">CHENNAI</span>
@@ -385,7 +384,7 @@ export default function App() {
               <img
                 src="/md_about.jpg"
                 alt="Julian Vance in boardroom"
-                className="absolute inset-0 w-full h-full object-cover object-right grayscale hover:grayscale-0 transition-all duration-1000"
+                className="absolute inset-0 w-full h-full object-cover object-right transition-all duration-1000"
               />
               <div className="absolute bottom-10 left-10 z-20 text-left bg-neutral-950/80 backdrop-blur-md border border-neutral-800 p-6 max-w-sm hidden xl:block">
                 <p className="font-serif italic text-lg text-neutral-200 mb-2">"Behind the lens is where precision meets imagination."</p>
@@ -531,9 +530,9 @@ export default function App() {
                         {activeCompany.services.map((svc, i) => (
                           <div key={i} className="flex items-center justify-between bg-neutral-950/40 border border-neutral-900 px-4 py-3 hover:border-brand-red/30 transition-colors">
                             <span className="text-white text-xs font-semibold">{svc.name}</span>
-                            <a 
-                              href={svc.link} 
-                              target="_blank" 
+                            <a
+                              href={svc.link}
+                              target="_blank"
                               rel="noreferrer"
                               className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-red hover:text-white transition-colors group cursor-pointer"
                             >
@@ -545,9 +544,9 @@ export default function App() {
                       </div>
                     </div>
                   ) : (
-                    <a 
-                      href={activeCompany.link} 
-                      target="_blank" 
+                    <a
+                      href={activeCompany.link}
+                      target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 text-xs font-bold text-brand-red uppercase tracking-widest hover:text-white transition-colors cursor-pointer group"
                     >
