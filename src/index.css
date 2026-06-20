@@ -20,6 +20,64 @@
   --color-brand-dark: #0b0b0c;
   --color-brand-gray: #18181c;
   --color-brand-light: #f5f4f0;
+
+  /* ===== Semantic theme tokens (resolve at runtime per theme) ===== */
+  --color-canvas: var(--c-canvas);      /* app background          */
+  --color-panel: var(--c-panel);        /* section panel surface   */
+  --color-panel-2: var(--c-panel-2);    /* alternate / image panel */
+  --color-sidebar: var(--c-sidebar);    /* nav + header chrome     */
+  --color-surface: var(--c-surface);    /* cards / chips / tooltips*/
+  --color-ink: var(--c-ink);            /* primary text            */
+  --color-ink-muted: var(--c-ink-muted);/* secondary text          */
+  --color-ink-subtle: var(--c-ink-subtle);/* labels / captions     */
+  --color-line: var(--c-line);          /* subtle borders/dividers */
+  --color-line-strong: var(--c-line-strong);/* stronger borders    */
+  --color-on-accent: #ffffff;           /* text on brand-red (both)*/
+  --color-vignette: var(--c-vignette);  /* image edge blend — transparent in light */
+}
+
+/* ===== Theme variable sets ===== */
+/* Dark is the default (the original design). */
+:root {
+  --c-canvas: #0b0b0c;
+  --c-panel: #0c0c0d;
+  --c-panel-2: #09090a;
+  --c-sidebar: #070708;
+  --c-surface: #101013;
+  --c-ink: #ffffff;
+  --c-ink-muted: #a3a3a3;
+  --c-ink-subtle: #6e6e73;
+  --c-line: #18181b;
+  --c-line-strong: #27272a;
+  --c-pattern: rgba(255, 255, 255, 0.03);
+  --c-pattern-dot: rgba(255, 255, 255, 0.05);
+  --c-vignette: #0b0b0c;
+  color-scheme: dark;
+}
+
+/* Light theme — warm off-white, brand-cohesive. */
+html.theme-light {
+  --c-canvas: #f5f4f0;
+  --c-panel: #efeee8;
+  --c-panel-2: #ffffff;
+  --c-sidebar: #ffffff;
+  --c-surface: #ffffff;
+  --c-ink: #16161a;
+  --c-ink-muted: #52525b;
+  --c-ink-subtle: #71717a;
+  --c-line: #e4e2da;
+  --c-line-strong: #d4d2c8;
+  --c-pattern: rgba(0, 0, 0, 0.05);
+  --c-pattern-dot: rgba(0, 0, 0, 0.07);
+  --c-vignette: transparent;
+  color-scheme: light;
+}
+
+/* Smooth cross-fade on theme switch (colors only — leaves panel transforms/animations untouched). */
+*, *::before, *::after {
+  transition-property: background-color, border-color, color, fill;
+  transition-duration: 400ms;
+  transition-timing-function: ease;
 }
 
 
@@ -71,7 +129,8 @@
 
 /* Layout Utilities */
 body {
-  background-color: #0b0b0c;
+  background-color: var(--c-canvas);
+  color: var(--c-ink);
   font-family: "Outfit", sans-serif;
   overflow: hidden;
   height: 100vh;
@@ -115,13 +174,13 @@ body {
 .bg-grid-pattern {
   background-size: 40px 40px;
   background-image:
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(to right, var(--c-pattern) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--c-pattern) 1px, transparent 1px);
 }
 
 .bg-dot-pattern {
   background-size: 20px 20px;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-image: radial-gradient(var(--c-pattern-dot) 1px, transparent 1px);
 }
 
 /* Custom styled inputs for contact form */
@@ -132,7 +191,7 @@ body {
 }
 
 .floating-label-input {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1px solid var(--c-line-strong);
   transition: border-color 0.3s ease;
 }
 

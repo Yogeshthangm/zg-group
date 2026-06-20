@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Home,
   User,
@@ -17,7 +17,9 @@ import {
   Building,
   CheckCircle,
   FileText,
-  ChevronLeft
+  ChevronLeft,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 // Section Definitions
@@ -98,10 +100,17 @@ const COMPANIES = [
 // Testimonials Data removed
 
 export default function App() {
-  // Navigation State
-  const [activeSection, setActiveSection] = useState('hero');
+  // Navigation State — honor a ?section= deep-link on first load, else 'hero'.
+  const initialSection = (() => {
+    if (typeof window !== 'undefined') {
+      const s = new URLSearchParams(window.location.search).get('section');
+      if (SECTIONS.some((sec) => sec.id === s)) return s;
+    }
+    return 'hero';
+  })();
+  const [activeSection, setActiveSection] = useState(initialSection);
   const [transitionState, setTransitionState] = useState({
-    active: 'hero',
+    active: initialSection,
     exiting: null,
     entering: null,
     isTransitioning: false
@@ -117,6 +126,25 @@ export default function App() {
 
   // Staggered words for Hero section
   const [heroStaggerVisible, setHeroStaggerVisible] = useState(false);
+
+  // Theme state — 'dark' (original design) or 'light'.
+  // Priority: ?theme= URL param (deep-link) → saved preference → dark default.
+  const [theme, setTheme] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const urlTheme = new URLSearchParams(window.location.search).get('theme');
+      if (urlTheme === 'light' || urlTheme === 'dark') return urlTheme;
+      return window.localStorage.getItem('zg-theme') || 'dark';
+    }
+    return 'dark';
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.toggle('theme-light', theme === 'light');
+    window.localStorage.setItem('zg-theme', theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   useEffect(() => {
     // Set a tiny delay for hero text to stagger in on first load
@@ -163,6 +191,53 @@ export default function App() {
     }, 950);
   };
 
+  // ---- Scroll / trackpad / wheel navigation between sections ----
+  const wheelLockRef = useRef(false);
+  const wheelReleaseRef = useRef(null);
+  const navigateRef = useRef(() => {});
+  const modalOpenRef = useRef(false);
+  modalOpenRef.current = showVideoModal;
+
+  // Refreshed every render so the listener always sees the current active section.
+  navigateRef.current = (dir) => {
+    const idx = SECTIONS.findIndex((s) => s.id === transitionState.active);
+    const target = SECTIONS[idx + dir];
+    if (target) navigateTo(target.id);
+  };
+
+  useEffect(() => {
+    const onWheel = (e) => {
+      if (modalOpenRef.current) return;
+      // Ignore tiny/horizontal scrolls (trackpad sideways gestures).
+      if (Math.abs(e.deltaY) < 4 || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
+
+      // Edge-aware: if the panel under the cursor can still scroll in this
+      // direction, let it scroll internally instead of changing sections.
+      const panel = e.target.closest ? e.target.closest('.panel-left, .panel-right') : null;
+      if (panel && panel.scrollHeight > panel.clientHeight + 1) {
+        const atTop = panel.scrollTop <= 0;
+        const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1;
+        if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) return;
+      }
+
+      e.preventDefault();
+
+      // Momentum guard: one gesture = one move. The lock only releases after
+      // wheel events go quiet for 600ms, so trackpad inertia can't skip sections.
+      if (wheelReleaseRef.current) clearTimeout(wheelReleaseRef.current);
+      wheelReleaseRef.current = setTimeout(() => { wheelLockRef.current = false; }, 600);
+      if (wheelLockRef.current) return;
+      wheelLockRef.current = true;
+      navigateRef.current(e.deltaY > 0 ? 1 : -1);
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      if (wheelReleaseRef.current) clearTimeout(wheelReleaseRef.current);
+    };
+  }, []);
+
   // Check if a section should be rendered in the DOM
   const shouldRender = (sectionId) => {
     return (
@@ -192,43 +267,60 @@ export default function App() {
   };
 
   return (
-    <div className="relative min-h-screen w-full bg-[#0b0b0c] text-white font-sans overflow-hidden">
+    <div className="relative min-h-screen w-full bg-canvas text-ink font-sans overflow-hidden">
 
       {/* 1. Header/Logo overlay matching Ramsay style */}
-      <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-gradient-to-b from-[#0b0b0c]/90 to-transparent backdrop-blur-xs pointer-events-auto">
+      <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-canvas/60 backdrop-blur-lg border-b border-line/70 shadow-sm pointer-events-auto">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-8 h-8 rounded-full border border-brand-red bg-brand-red/10 text-brand-red font-outfit font-black text-sm">
-            Z
-          </div>
-          <span className="font-outfit font-bold tracking-widest text-lg uppercase text-white">Zerogravity Group</span>
+          <img src="/logo-zerogravity.webp" alt="ZeroGravity Group logo" className="w-8 h-8 object-contain" />
+          <span className="font-outfit font-bold tracking-widest text-lg uppercase text-ink">Zerogravity Group</span>
         </div>
 
-        {/* Ramsay-style header information */}
-        <div className="hidden lg:flex items-center gap-8 text-xs text-neutral-400 font-sans">
-
-          <div className="w-[1px] h-3 bg-neutral-800"></div>
-          <div className="flex items-center gap-2">
-            <span className="text-brand-red font-medium">EMAIL:</span>
-            <a href="mailto:office@zerogravitygroup.com" className="hover:text-white transition-colors">office@zerogravitygroup.com</a>
+        {/* Right-side controls cluster */}
+        <div className="flex items-center gap-4 md:gap-6">
+          {/* Ramsay-style header information */}
+          <div className="hidden lg:flex items-center gap-8 text-xs text-ink-muted font-sans">
+            <div className="flex items-center gap-2">
+              <span className="text-brand-red font-medium">EMAIL:</span>
+              <a href="mailto:office@zerogravitygroup.com" className="hover:text-ink transition-colors">office@zerogravitygroup.com</a>
+            </div>
+            <div className="w-[1px] h-3 bg-line-strong"></div>
           </div>
-        </div>
 
-        {/* Mobile menu toggle */}
-        <button
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="md:hidden flex items-center justify-center w-10 h-10 rounded border border-neutral-800 hover:border-brand-red transition-all cursor-pointer text-white"
-          aria-label="Toggle Navigation Menu"
-        >
-          {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+          {/* Light / Dark theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="group relative flex items-center justify-center w-10 h-10 rounded border border-line-strong hover:border-brand-red transition-all cursor-pointer text-ink overflow-hidden"
+            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+          >
+            <Sun
+              size={18}
+              className={`absolute transition-all duration-500 ${theme === 'light' ? 'opacity-0 -rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100 text-brand-red'}`}
+            />
+            <Moon
+              size={18}
+              className={`absolute transition-all duration-500 ${theme === 'light' ? 'opacity-100 rotate-0 scale-100 text-brand-red' : 'opacity-0 rotate-90 scale-0'}`}
+            />
+          </button>
+
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded border border-line-strong hover:border-brand-red transition-all cursor-pointer text-ink"
+            aria-label="Toggle Navigation Menu"
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </header>
 
       {/* 2. Fixed Left Sidebar Navigation (Divergent template inspiration) */}
-      <nav className={`fixed top-0 left-0 h-full w-[80px] bg-[#070708] border-r border-neutral-900 flex flex-col justify-between items-center py-6 z-40 transition-transform duration-300 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <nav className={`fixed top-0 left-0 h-full w-[80px] bg-sidebar border-r border-line flex flex-col justify-between items-center py-6 z-40 transition-transform duration-300 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
 
         {/* Top Brand Logo Container */}
         <div className="flex flex-col items-center gap-1 cursor-pointer" onClick={() => navigateTo('hero')}>
-          <div className="w-10 h-10 flex items-center justify-center bg-brand-red text-white font-outfit font-black text-lg">
+          <div className="w-10 h-10 flex items-center justify-center bg-brand-red text-on-accent font-outfit font-black text-lg">
             ZG
           </div>
         </div>
@@ -245,13 +337,13 @@ export default function App() {
                   navigateTo(sec.id);
                   if (window.innerWidth < 768) setSidebarOpen(false);
                 }}
-                className={`group relative w-full py-3 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-neutral-500 hover:text-white`}
+                className={`group relative w-full py-3 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-ink-subtle hover:text-ink`}
               >
                 {/* Active Red Highlight Bar */}
                 <div className={`absolute left-0 top-0 h-full w-[3px] bg-brand-red transition-transform duration-300 ${isCurrent ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-50'}`}></div>
 
                 <IconComponent size={20} className={`transition-all duration-300 ${isCurrent ? 'text-brand-red scale-110' : 'group-hover:scale-105'}`} />
-                <span className={`text-[10px] tracking-wider mt-1.5 font-outfit font-medium uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block absolute left-[80px] bg-neutral-950 text-white px-3 py-1.5 border border-neutral-800 rounded pointer-events-none whitespace-nowrap z-50 shadow-xl`}>
+                <span className={`text-[10px] tracking-wider mt-1.5 font-outfit font-medium uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block absolute left-[80px] bg-surface text-ink px-3 py-1.5 border border-line-strong rounded pointer-events-none whitespace-nowrap z-50 shadow-xl`}>
                   {sec.name}
                 </span>
               </button>
@@ -260,8 +352,8 @@ export default function App() {
         </div>
 
         {/* Bottom Social Links & Copyright */}
-        <div className="flex flex-col items-center gap-4 text-neutral-600">
-          <div className="w-4 h-[1px] bg-neutral-800"></div>
+        <div className="flex flex-col items-center gap-4 text-ink-subtle">
+          <div className="w-4 h-[1px] bg-line-strong"></div>
           <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-brand-red transition-colors text-xs font-semibold uppercase tracking-wider -rotate-90 origin-center my-6 whitespace-nowrap cursor-pointer">
             LINKEDIN
           </a>
@@ -275,23 +367,23 @@ export default function App() {
         {shouldRender('hero') && (
           <section id="hero" className={`section-container ${getSectionClass('hero')}`}>
             {/* Left Panel: Ramsay typography + editorial text */}
-            <div className="panel-left split-transition flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-[#0c0c0d] bg-grid-pattern overflow-hidden">
+            <div className="panel-left split-transition flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-panel bg-grid-pattern overflow-hidden">
               <div className="max-w-xl">
                 {/* Staggered Serif Word Reveals (IvyPresto heading style) */}
                 <div className="mb-6 font-serif italic">
-                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-ink mb-2 leading-none">
                     <span className="inline-block animate-reveal">
                       Strategy<span className="text-brand-red">.</span>
                     </span>
                   </div>
                   <br />
-                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-white mb-2 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-ink mb-2 leading-none">
                     <span className="inline-block animate-reveal stagger-1">
                       Creativity<span className="text-brand-red">.</span>
                     </span>
                   </div>
                   <br />
-                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-neutral-400 leading-none">
+                  <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-ink-muted leading-none">
                     <span className="inline-block animate-reveal stagger-2">
                       Results<span className="text-brand-red">.</span>
                     </span>
@@ -301,7 +393,7 @@ export default function App() {
                 <h1 className="sr-only">ZEROGRAVITY GROUP</h1>
 
                 {/* Supporting Text: Executive philosophy */}
-                <p className="text-neutral-300 text-lg md:text-xl leading-relaxed mb-10 font-light max-w-lg animate-fade-in stagger-3">
+                <p className="text-ink-muted text-lg md:text-xl leading-relaxed mb-10 font-light max-w-lg animate-fade-in stagger-3">
                   I build what others envision
                 </p>
 
@@ -310,7 +402,7 @@ export default function App() {
                 <div className="flex flex-wrap items-center gap-6 opacity-0 animate-fade-in stagger-4">
                   <button
                     onClick={() => navigateTo('companies')}
-                    className="group flex items-center gap-3 bg-brand-red hover:bg-brand-red/90 text-white font-outfit text-sm font-bold uppercase tracking-wider px-8 py-4.5 rounded-none transition-all duration-300 hover:shadow-lg hover:shadow-brand-red/20 border border-brand-red cursor-pointer"
+                    className="group flex items-center gap-3 bg-brand-red hover:bg-brand-red/90 text-on-accent font-outfit text-sm font-bold uppercase tracking-wider px-8 py-4.5 rounded-none transition-all duration-300 hover:shadow-lg hover:shadow-brand-red/20 border border-brand-red cursor-pointer"
                   >
                     <span>Explore Companies</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -318,10 +410,10 @@ export default function App() {
 
                   <button
                     onClick={() => setShowVideoModal(true)}
-                    className="group flex items-center gap-3 hover:text-brand-red text-neutral-300 transition-colors py-3 cursor-pointer"
+                    className="group flex items-center gap-3 hover:text-brand-red text-ink-muted transition-colors py-3 cursor-pointer"
                   >
-                    <div className="w-12 h-12 rounded-full border border-neutral-800 group-hover:border-brand-red flex items-center justify-center text-white bg-neutral-950/50 transition-all group-hover:scale-105 shadow-md">
-                      <Play size={16} className="fill-white translate-x-0.5" />
+                    <div className="w-12 h-12 rounded-full border border-line-strong group-hover:border-brand-red flex items-center justify-center text-ink bg-surface/50 transition-all group-hover:scale-105 shadow-md">
+                      <Play size={16} className="fill-current translate-x-0.5" />
                     </div>
                     <span className="font-outfit text-xs font-bold uppercase tracking-wider">Watch brand reel</span>
                   </button>
@@ -330,10 +422,10 @@ export default function App() {
             </div>
 
             {/* Right Panel: Portrait matching Ramsay visual style */}
-            <div className="panel-right split-transition bg-[#09090a] relative flex items-center justify-center overflow-hidden">
+            <div className="panel-right split-transition bg-panel-2 relative flex items-center justify-center overflow-hidden">
               {/* Dark vignette gradient to blend image into background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b0c] via-[#09090a]/50 to-transparent z-10 hidden md:block"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0c] via-transparent to-transparent z-10 md:hidden"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-vignette via-vignette/50 to-transparent z-10 hidden md:block"></div>
+              <div className="absolute inset-0 bg-gradient-to-t from-vignette via-transparent to-transparent z-10 md:hidden"></div>
 
               {/* Executive Image */}
               <img
@@ -344,8 +436,8 @@ export default function App() {
 
               {/* Editorial bottom detail overlay */}
               <div className="absolute bottom-10 right-25 z-20 text-right font-outfit select-none pointer-events-none hidden lg:block">
-                <span className="text-[10px] tracking-[0.3em] text-neutral-500 font-bold uppercase block mb-1">FOUNDER</span>
-                <span className="text-lg text-white font-extrabold tracking-widest uppercase">ZEROGRAVITY GROUP.</span>
+                <span className="text-[10px] tracking-[0.3em] text-ink-subtle font-bold uppercase block mb-1">FOUNDER</span>
+                <span className="text-lg text-on-accent font-extrabold tracking-widest uppercase">ZEROGRAVITY GROUP.</span>
                 <span className="block text-brand-red text-xs mt-1">CHENNAI</span>
               </div>
             </div>
@@ -356,34 +448,34 @@ export default function App() {
         {shouldRender('about') && (
           <section id="about" className={`section-container ${getSectionClass('about')}`}>
             {/* Left Panel: Profile Image */}
-            <div className="panel-left split-transition bg-[#0d0d0e] relative flex items-center justify-center">
-              <div className="absolute inset-0 bg-gradient-to-l from-[#0b0b0c] via-[#0d0d0e]/30 to-transparent z-10 hidden md:block"></div>
+            <div className="panel-left split-transition bg-panel relative flex items-center justify-center">
+              <div className="absolute inset-0 bg-gradient-to-l from-vignette via-vignette/30 to-transparent z-10 hidden md:block"></div>
               <img
                 src="/md_about.jpg"
                 alt="Ajay in boardroom meetings representing ZeroGravity Group"
                 className="absolute inset-0 w-full h-full object-cover object-right transition-all duration-1000"
               />
-              <div className="absolute bottom-10 left-10 z-20 text-left bg-neutral-950/80 backdrop-blur-md border border-neutral-800 p-6 max-w-sm hidden xl:block">
-                <p className="font-serif italic text-lg text-neutral-200 mb-2">"Behind the lens is where precision meets imagination."</p>
+              <div className="absolute bottom-10 left-10 z-20 text-left bg-surface/80 backdrop-blur-md border border-line-strong p-6 max-w-sm hidden xl:block">
+                <p className="font-serif italic text-lg text-ink mb-2">"Behind the lens is where precision meets imagination."</p>
                 <span className="text-xs font-outfit uppercase tracking-widest text-brand-red font-bold">— Ajay</span>
               </div>
             </div>
 
             {/* Right Panel: Biography and Tabs */}
-            <div className="panel-right split-transition bg-[#0b0b0c] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-dot-pattern">
+            <div className="panel-right split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-dot-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">BACKGROUND & PHILOSOPHY</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight mb-8 font-light">
-                  Architecting Future <br /><span className="font-semibold italic text-neutral-300">Enterprises</span>.
+                <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
+                  Architecting Future <br /><span className="font-semibold italic text-ink-muted">Enterprises</span>.
                 </h2>
 
                 {/* Tabs Selector */}
-                <div className="flex border-b border-neutral-900 mb-8">
+                <div className="flex border-b border-line mb-8">
                   {['journey', 'vision', 'mission'].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
-                      className={`py-3 px-6 text-xs uppercase tracking-widest font-outfit font-bold relative transition-colors cursor-pointer ${activeTab === tab ? 'text-white' : 'text-neutral-500 hover:text-neutral-300'}`}
+                      className={`py-3 px-6 text-xs uppercase tracking-widest font-outfit font-bold relative transition-colors cursor-pointer ${activeTab === tab ? 'text-ink' : 'text-ink-subtle hover:text-ink-muted'}`}
                     >
                       {activeTab === tab && (
                         <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-brand-red"></div>
@@ -396,7 +488,7 @@ export default function App() {
                 {/* Tab Contents */}
                 <div className="min-h-[250px]">
                   {activeTab === 'journey' && (
-                    <div className="space-y-5 text-neutral-400 text-sm leading-relaxed font-light">
+                    <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light">
                       <p>
                         Ajay’s journey into photography began as a spontaneous passion that soon evolved into a lifelong calling. Originally trained as an engineer, he discovered his true creative spirit behind the lens—where precision met imagination.
                       </p>
@@ -407,7 +499,7 @@ export default function App() {
                   )}
 
                   {activeTab === 'vision' && (
-                    <div className="space-y-5 text-neutral-400 text-sm leading-relaxed font-light">
+                    <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light">
                       <p>
                         To become a premier, full-service wedding photography studio that offers end-to-end creative solutions for clients around the world.
                       </p>
@@ -418,7 +510,7 @@ export default function App() {
                   )}
 
                   {activeTab === 'mission' && (
-                    <div className="space-y-5 text-neutral-400 text-sm leading-relaxed font-light font-sans">
+                    <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light font-sans">
                       <p>
                         Our mission is to elevate creative storytelling by offering personalized photography experiences that authentically reflect each client’s personality and emotion.
                       </p>
@@ -437,11 +529,11 @@ export default function App() {
         {shouldRender('companies') && (
           <section id="companies" className={`section-container ${getSectionClass('companies')}`}>
             {/* Left Panel: Interactive List of Portfolio Companies */}
-            <div className="panel-left split-transition bg-[#0c0c0d] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-neutral-900 bg-grid-pattern">
+            <div className="panel-left split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-grid-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">ZEROGRAVITY GROUP</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight mb-8 font-light">
-                  Our Portfolio <br /><span className="font-semibold italic text-neutral-300">Companies</span>.
+                <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
+                  Our Portfolio <br /><span className="font-semibold italic text-ink-muted">Companies</span>.
                 </h2>
 
                 {/* Companies vertical list */}
@@ -452,15 +544,15 @@ export default function App() {
                       <button
                         key={company.id}
                         onClick={() => setActiveCompany(company)}
-                        className={`w-full text-left p-6 border transition-all duration-300 cursor-pointer flex items-center justify-between ${isSelected ? 'border-brand-red bg-brand-red/5' : 'border-neutral-900 bg-neutral-950/20 hover:border-neutral-800'}`}
+                        className={`w-full text-left p-6 border transition-all duration-300 cursor-pointer flex items-center justify-between ${isSelected ? 'border-brand-red bg-brand-red/5' : 'border-line bg-surface/20 hover:border-line-strong'}`}
                       >
                         <div>
-                          <span className={`text-[10px] font-outfit uppercase tracking-widest block mb-1.5 ${isSelected ? 'text-brand-red font-bold' : 'text-neutral-500'}`}>
+                          <span className={`text-[10px] font-outfit uppercase tracking-widest block mb-1.5 ${isSelected ? 'text-brand-red font-bold' : 'text-ink-subtle'}`}>
                             {company.sector}
                           </span>
-                          <h3 className="text-white font-bold text-lg md:text-xl">{company.name}</h3>
+                          <h3 className="text-ink font-bold text-lg md:text-xl">{company.name}</h3>
                         </div>
-                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-brand-red text-white bg-brand-red' : 'border-neutral-800 text-neutral-500 group-hover:border-neutral-600'}`}>
+                        <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-brand-red text-on-accent bg-brand-red' : 'border-line-strong text-ink-subtle group-hover:border-ink-subtle'}`}>
                           <ChevronRight size={16} />
                         </div>
                       </button>
@@ -471,47 +563,47 @@ export default function App() {
             </div>
 
             {/* Right Panel: Selected Company Deep-Dive */}
-            <div className="panel-right split-transition bg-[#09090a] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24">
+            <div className="panel-right split-transition bg-panel-2 flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24">
               <div className="max-w-lg">
                 <div className={`p-8 border rounded-lg ${activeCompany.bgClass} backdrop-blur-md`}>
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded bg-white/5 border border-white/10 flex items-center justify-center text-brand-red">
+                    <div className="w-10 h-10 rounded bg-ink/5 border border-ink/10 flex items-center justify-center text-brand-red">
                       <Building size={20} />
                     </div>
                     <div>
-                      <h4 className="text-white text-xs uppercase tracking-widest font-outfit font-bold">PORTFOLIO CASE STUDY</h4>
-                      <h3 className="text-white text-2xl font-black tracking-tight">{activeCompany.name}</h3>
+                      <h4 className="text-ink text-xs uppercase tracking-widest font-outfit font-bold">PORTFOLIO CASE STUDY</h4>
+                      <h3 className="text-ink text-2xl font-black tracking-tight">{activeCompany.name}</h3>
                     </div>
                   </div>
 
-                  <p className="text-neutral-400 text-sm leading-relaxed mb-8 font-light">
+                  <p className="text-ink-muted text-sm leading-relaxed mb-8 font-light">
                     {activeCompany.description}
                   </p>
 
-                  <div className="border-t border-neutral-900/60 pt-6 mb-8">
-                    <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block mb-4 font-outfit">KEY BUSINESS METRICS</span>
+                  <div className="border-t border-line/60 pt-6 mb-8">
+                    <span className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest block mb-4 font-outfit">KEY BUSINESS METRICS</span>
                     <div className="grid grid-cols-3 gap-4">
                       {activeCompany.metrics.map((metric, i) => (
                         <div key={i}>
-                          <span className="text-neutral-500 text-[10px] block mb-1 uppercase font-semibold">{metric.label}</span>
-                          <span className="text-white text-sm font-extrabold font-outfit">{metric.value}</span>
+                          <span className="text-ink-subtle text-[10px] block mb-1 uppercase font-semibold">{metric.label}</span>
+                          <span className="text-ink text-sm font-extrabold font-outfit">{metric.value}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {activeCompany.services ? (
-                    <div className="border-t border-neutral-900/60 pt-6">
-                      <span className="text-[10px] font-bold text-neutral-500 uppercase tracking-widest block mb-4 font-outfit">SERVICES & WEB BRANDS</span>
+                    <div className="border-t border-line/60 pt-6">
+                      <span className="text-[10px] font-bold text-ink-subtle uppercase tracking-widest block mb-4 font-outfit">SERVICES & WEB BRANDS</span>
                       <div className="space-y-3">
                         {activeCompany.services.map((svc, i) => (
-                          <div key={i} className="flex items-center justify-between bg-neutral-950/40 border border-neutral-900 px-4 py-3 hover:border-brand-red/30 transition-colors">
-                            <span className="text-white text-xs font-semibold">{svc.name}</span>
+                          <div key={i} className="flex items-center justify-between bg-surface/40 border border-line px-4 py-3 hover:border-brand-red/30 transition-colors">
+                            <span className="text-ink text-xs font-semibold">{svc.name}</span>
                             <a
                               href={svc.link}
                               target="_blank"
                               rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-red hover:text-white transition-colors group cursor-pointer"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-red hover:text-ink transition-colors group cursor-pointer"
                             >
                               <span>Visit Site</span>
                               <ExternalLink size={11} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -525,7 +617,7 @@ export default function App() {
                       href={activeCompany.link}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center gap-2 text-xs font-bold text-brand-red uppercase tracking-widest hover:text-white transition-colors cursor-pointer group"
+                      className="inline-flex items-center gap-2 text-xs font-bold text-brand-red uppercase tracking-widest hover:text-ink transition-colors cursor-pointer group"
                     >
                       <span>Visit website link</span>
                       <ExternalLink size={12} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -541,14 +633,14 @@ export default function App() {
         {shouldRender('achievements') && (
           <section id="achievements" className={`section-container ${getSectionClass('achievements')}`}>
             {/* Left Panel: Milestone Timeline */}
-            <div className="panel-left split-transition bg-[#0b0b0c] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-neutral-900 bg-dot-pattern">
+            <div className="panel-left split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-dot-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">LEADERSHIP TIMELINE</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight mb-8 font-light">
-                  Milestones & <br /><span className="font-semibold italic text-neutral-300">Accolades</span>.
+                <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
+                  Milestones & <br /><span className="font-semibold italic text-ink-muted">Accolades</span>.
                 </h2>
 
-                <div className="relative pl-6 border-l border-neutral-900 space-y-8">
+                <div className="relative pl-6 border-l border-line space-y-8">
                   {[
                     { year: '2026', title: 'Global Leader of the Year', desc: 'Awarded by the Clean Energy Forum for leading funding and scaling of smarter grids.' },
                     { year: '2024', title: 'Zerogravity Technologies Milestone', desc: 'Successfully structured the $820M acquisition of Apex Technologies VC assets.' },
@@ -557,10 +649,10 @@ export default function App() {
                   ].map((milestone, i) => (
                     <div key={i} className="relative group">
                       {/* Bullet circle */}
-                      <div className="absolute left-[-29px] top-1.5 w-3 h-3 rounded-full bg-neutral-950 border border-neutral-800 group-hover:bg-brand-red group-hover:border-brand-red transition-colors"></div>
+                      <div className="absolute left-[-29px] top-1.5 w-3 h-3 rounded-full bg-surface border border-line-strong group-hover:bg-brand-red group-hover:border-brand-red transition-colors"></div>
                       <span className="text-brand-red text-xs font-bold font-outfit tracking-widest uppercase block mb-1">{milestone.year}</span>
-                      <h4 className="text-white text-base font-bold mb-1.5">{milestone.title}</h4>
-                      <p className="text-neutral-400 text-xs leading-relaxed font-light">{milestone.desc}</p>
+                      <h4 className="text-ink text-base font-bold mb-1.5">{milestone.title}</h4>
+                      <p className="text-ink-muted text-xs leading-relaxed font-light">{milestone.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -568,10 +660,10 @@ export default function App() {
             </div>
 
             {/* Right Panel: Impact Metrics Grid */}
-            <div className="panel-right split-transition bg-[#0c0c0d] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
+            <div className="panel-right split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">AGGREGATE QUANTIFIABLE IMPACT</span>
-                <h3 className="text-white text-2xl font-serif italic mb-10 text-neutral-300">Measuring a legacy by the numbers.</h3>
+                <h3 className="text-2xl font-serif italic mb-10 text-ink-muted">Measuring a legacy by the numbers.</h3>
 
                 <div className="grid grid-cols-2 gap-8">
                   {[
@@ -580,10 +672,10 @@ export default function App() {
                     { num: '40k+', label: 'Global Workforce', desc: 'Total employee workforce across our portfolio group.' },
                     { num: '320+', label: 'Industry Patented Tech', desc: 'Proprietary technologies licensed worldwide.' }
                   ].map((metric, i) => (
-                    <div key={i} className="border border-neutral-900 bg-neutral-950/40 p-6 rounded hover:border-brand-red/20 transition-all hover:scale-[1.01]">
-                      <span className="text-3xl md:text-5xl font-outfit font-black tracking-tight text-white block mb-2">{metric.num}</span>
+                    <div key={i} className="border border-line bg-surface/40 p-6 rounded hover:border-brand-red/20 transition-all hover:scale-[1.01]">
+                      <span className="text-3xl md:text-5xl font-outfit font-black tracking-tight text-ink block mb-2">{metric.num}</span>
                       <span className="text-brand-red text-xs font-bold uppercase tracking-wider block mb-2 font-outfit">{metric.label}</span>
-                      <p className="text-neutral-500 text-xs leading-relaxed font-light">{metric.desc}</p>
+                      <p className="text-ink-subtle text-xs leading-relaxed font-light">{metric.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -598,11 +690,11 @@ export default function App() {
         {shouldRender('contact') && (
           <section id="contact" className={`section-container ${getSectionClass('contact')}`}>
             {/* Left Panel: Minimalist Contact Form */}
-            <div className="panel-left split-transition bg-[#0b0b0c] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-neutral-900 bg-dot-pattern">
+            <div className="panel-left split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-dot-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">INQUIRIES & ENGAGEMENTS</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight mb-8 font-light">
-                  Initiate a <br /><span className="font-semibold italic text-neutral-300">Dialogue</span>.
+                <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
+                  Initiate a <br /><span className="font-semibold italic text-ink-muted">Dialogue</span>.
                 </h2>
 
                 {formSubmitted ? (
@@ -611,7 +703,7 @@ export default function App() {
                       <CheckCircle size={20} />
                       <span className="font-bold font-outfit uppercase tracking-widest text-xs">TRANSMISSION RECEIVED</span>
                     </div>
-                    <p className="text-neutral-400 text-sm leading-relaxed font-light">
+                    <p className="text-ink-muted text-sm leading-relaxed font-light">
                       Your inquiry has been directly routed to Ajay's private office. An executive assistant will respond to your submission within 24 business hours.
                     </p>
                   </div>
@@ -623,13 +715,13 @@ export default function App() {
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        className="floating-label-input w-full bg-transparent text-white text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none"
+                        className="floating-label-input w-full bg-transparent text-ink text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none"
                         placeholder="Full Name"
                         required
                       />
                       <label
                         htmlFor="name"
-                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-neutral-500 transition-all duration-300 pointer-events-none select-none"
+                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-ink-subtle transition-all duration-300 pointer-events-none select-none"
                       >
                         Full Name
                       </label>
@@ -641,13 +733,13 @@ export default function App() {
                         id="email"
                         value={formData.email}
                         onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                        className="floating-label-input w-full bg-transparent text-white text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none"
+                        className="floating-label-input w-full bg-transparent text-ink text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none"
                         placeholder="Email Address"
                         required
                       />
                       <label
                         htmlFor="email"
-                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-neutral-500 transition-all duration-300 pointer-events-none select-none"
+                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-ink-subtle transition-all duration-300 pointer-events-none select-none"
                       >
                         Email Address
                       </label>
@@ -659,13 +751,13 @@ export default function App() {
                         value={formData.message}
                         onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                         rows="4"
-                        className="floating-label-input w-full bg-transparent text-white text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none resize-none"
+                        className="floating-label-input w-full bg-transparent text-ink text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none resize-none"
                         placeholder="Message / Project Scope"
                         required
                       ></textarea>
                       <label
                         htmlFor="message"
-                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-neutral-500 transition-all duration-300 pointer-events-none select-none"
+                        className="absolute left-1 top-3 text-xs uppercase tracking-widest text-ink-subtle transition-all duration-300 pointer-events-none select-none"
                       >
                         Message / Project Scope
                       </label>
@@ -673,7 +765,7 @@ export default function App() {
 
                     <button
                       type="submit"
-                      className="group flex items-center gap-3 bg-brand-red hover:bg-brand-red/90 text-white font-outfit text-sm font-bold uppercase tracking-wider px-8 py-4.5 transition-all border border-brand-red cursor-pointer"
+                      className="group flex items-center gap-3 bg-brand-red hover:bg-brand-red/90 text-on-accent font-outfit text-sm font-bold uppercase tracking-wider px-8 py-4.5 transition-all border border-brand-red cursor-pointer"
                     >
                       <span>Send inquiry</span>
                       <Send size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -684,57 +776,57 @@ export default function App() {
             </div>
 
             {/* Right Panel: Office details & mockup map */}
-            <div className="panel-right split-transition bg-[#0c0c0d] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
+            <div className="panel-right split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
               <div className="max-w-xl">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">OFFICE DIRECTORY</span>
-                <h3 className="text-white text-2xl font-serif italic mb-8 text-neutral-300">ZeroGravity HQ.</h3>
+                <h3 className="text-2xl font-serif italic mb-8 text-ink-muted">ZeroGravity HQ.</h3>
 
-                <div className="space-y-6 mb-10 text-neutral-300">
+                <div className="space-y-6 mb-10 text-ink-muted">
                   <div className="flex gap-4 items-start">
                     <MapPin size={20} className="text-brand-red mt-1" />
                     <div>
-                      <span className="text-xs uppercase font-outfit text-neutral-500 font-bold block mb-1">HQ ADDRESS</span>
-                      <p className="text-sm font-light text-neutral-400">42, 50, Josier St, Tirumurthy Nagar, Nungambakkam, Tamil Nadu 600034</p>
+                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">HQ ADDRESS</span>
+                      <p className="text-sm font-light text-ink-muted">42, 50, Josier St, Tirumurthy Nagar, Nungambakkam, Tamil Nadu 600034</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
                     <Phone size={20} className="text-brand-red mt-1" />
                     <div>
-                      <span className="text-xs uppercase font-outfit text-neutral-500 font-bold block mb-1">GENERAL CONTACT</span>
-                      <p className="text-sm font-light text-neutral-400">+91 (44) 4305-6677</p>
+                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">GENERAL CONTACT</span>
+                      <p className="text-sm font-light text-ink-muted">+91 (44) 4305-6677</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
                     <FileText size={20} className="text-brand-red mt-1" />
                     <div>
-                      <span className="text-xs uppercase font-outfit text-neutral-500 font-bold block mb-1">SECURE ENCRYPTED COMMUNICATIONS</span>
-                      <p className="text-sm font-light text-neutral-400">ajay-secure-pgp-key.txt</p>
+                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">SECURE ENCRYPTED COMMUNICATIONS</span>
+                      <p className="text-sm font-light text-ink-muted">ajay-secure-pgp-key.txt</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Styled minimalist mockup map */}
-                <div className="border border-neutral-900 bg-neutral-950 p-4 h-[180px] rounded relative overflow-hidden flex items-center justify-center">
+                <div className="border border-line bg-surface p-4 h-[180px] rounded relative overflow-hidden flex items-center justify-center">
                   <div className="absolute inset-0 bg-dot-pattern opacity-30"></div>
 
                   {/* Mock map elements */}
-                  <div className="absolute w-[80%] h-[1px] bg-neutral-900 rotate-12"></div>
-                  <div className="absolute w-[80%] h-[1px] bg-neutral-900 -rotate-45"></div>
-                  <div className="absolute w-[60%] h-[1px] bg-neutral-900/60 rotate-90"></div>
+                  <div className="absolute w-[80%] h-[1px] bg-line-strong rotate-12"></div>
+                  <div className="absolute w-[80%] h-[1px] bg-line-strong -rotate-45"></div>
+                  <div className="absolute w-[60%] h-[1px] bg-line-strong/60 rotate-90"></div>
 
                   {/* Central marker representing ZeroGravity HQ */}
                   <div className="relative z-10 flex flex-col items-center">
                     <div className="w-5 h-5 rounded-full bg-brand-red/20 border border-brand-red flex items-center justify-center animate-bounce">
                       <div className="w-2.5 h-2.5 rounded-full bg-brand-red"></div>
                     </div>
-                    <span className="text-[9px] uppercase tracking-widest font-extrabold font-outfit bg-neutral-900 border border-neutral-800 px-2 py-0.5 rounded text-white mt-1 shadow-md">
+                    <span className="text-[9px] uppercase tracking-widest font-extrabold font-outfit bg-surface border border-line-strong px-2 py-0.5 rounded text-ink mt-1 shadow-md">
                       ZEROGRAVITY STUDIO
                     </span>
                   </div>
 
-                  <span className="absolute bottom-2 right-3 text-[9px] tracking-wider text-neutral-600 font-mono">CHENNAI GRID 13.0612° N, 80.2415° E</span>
+                  <span className="absolute bottom-2 right-3 text-[9px] tracking-wider text-ink-subtle font-mono">CHENNAI GRID 13.0612° N, 80.2415° E</span>
                 </div>
               </div>
             </div>
@@ -744,11 +836,11 @@ export default function App() {
 
       {/* 4. Brand Video Reel Modal (Ramsay Style) */}
       {showVideoModal && (
-        <div className="fixed inset-0 z-50 bg-[#070708]/95 flex items-center justify-center p-6 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-4xl aspect-video border border-neutral-800 bg-black shadow-2xl flex items-center justify-center flex-col">
+        <div className="fixed inset-0 z-50 bg-sidebar/95 flex items-center justify-center p-6 backdrop-blur-md animate-fade-in">
+          <div className="relative w-full max-w-4xl aspect-video border border-line-strong bg-surface shadow-2xl flex items-center justify-center flex-col">
             <button
               onClick={() => setShowVideoModal(false)}
-              className="absolute top-[-45px] right-0 flex items-center gap-2 text-neutral-400 hover:text-white text-xs uppercase font-outfit font-bold tracking-widest cursor-pointer"
+              className="absolute top-[-45px] right-0 flex items-center gap-2 text-ink-muted hover:text-ink text-xs uppercase font-outfit font-bold tracking-widest cursor-pointer"
             >
               <span>Close Video</span>
               <X size={16} />
@@ -761,20 +853,20 @@ export default function App() {
               <div className="w-16 h-16 rounded-full border-2 border-brand-red flex items-center justify-center text-brand-red bg-brand-red/10 animate-pulse">
                 <Play size={24} className="fill-brand-red translate-x-0.5" />
               </div>
-              <h4 className="text-white text-lg font-bold font-outfit uppercase tracking-widest mt-2">ZeroGravity Group brand reel</h4>
-              <p className="text-neutral-500 text-xs leading-relaxed font-light">
+              <h4 className="text-ink text-lg font-bold font-outfit uppercase tracking-widest mt-2">ZeroGravity Group brand reel</h4>
+              <p className="text-ink-subtle text-xs leading-relaxed font-light">
                 This is a high-fidelity placeholder for the brand's executive documentary: "Ajay: Creative Precision." In production environment, this triggers a video player linking to Vimeo or YouTube.
               </p>
 
               <button
                 onClick={() => setShowVideoModal(false)}
-                className="mt-4 border border-neutral-800 hover:border-brand-red hover:text-white text-neutral-400 text-[10px] font-bold font-outfit uppercase tracking-widest px-6 py-2.5 bg-neutral-950 transition-all cursor-pointer"
+                className="mt-4 border border-line-strong hover:border-brand-red hover:text-ink text-ink-muted text-[10px] font-bold font-outfit uppercase tracking-widest px-6 py-2.5 bg-surface transition-all cursor-pointer"
               >
                 Dismiss Player
               </button>
             </div>
 
-            <div className="absolute bottom-4 left-4 text-[9px] tracking-wider text-neutral-600 font-mono">AUDIO ENGINE: PCM / 24-BIT STEREO</div>
+            <div className="absolute bottom-4 left-4 text-[9px] tracking-wider text-ink-subtle font-mono">AUDIO ENGINE: PCM / 24-BIT STEREO</div>
           </div>
         </div>
       )}
@@ -791,10 +883,10 @@ export default function App() {
               aria-label={`Go to ${sec.name} section`}
             >
               {/* Dot element */}
-              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isCurrent ? 'bg-brand-red scale-150' : 'bg-neutral-600 group-hover:bg-neutral-300'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${isCurrent ? 'bg-brand-red scale-150' : 'bg-ink-subtle group-hover:bg-ink'}`}></div>
 
               {/* Tooltip showing section name on hover */}
-              <span className="absolute right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[10px] font-outfit font-bold uppercase tracking-wider text-brand-red pointer-events-none whitespace-nowrap bg-neutral-950 px-2.5 py-1 border border-neutral-900 rounded shadow-md">
+              <span className="absolute right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[10px] font-outfit font-bold uppercase tracking-wider text-brand-red pointer-events-none whitespace-nowrap bg-surface px-2.5 py-1 border border-line rounded shadow-md">
                 {sec.name}
               </span>
             </button>
