@@ -7,7 +7,6 @@ import {
   Mail,
   Menu,
   X,
-  Play,
   ChevronRight,
   ArrowRight,
   ExternalLink,
@@ -17,9 +16,7 @@ import {
   Building,
   CheckCircle,
   FileText,
-  ChevronLeft,
-  Sun,
-  Moon
+  ChevronLeft
 } from 'lucide-react';
 
 // Section Definitions
@@ -120,31 +117,25 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeCompany, setActiveCompany] = useState(COMPANIES[0]);
   const [activeTab, setActiveTab] = useState('journey'); // For About page
-  const [showVideoModal, setShowVideoModal] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   // Staggered words for Hero section
   const [heroStaggerVisible, setHeroStaggerVisible] = useState(false);
 
-  // Theme state — 'dark' (original design) or 'light'.
-  // Priority: ?theme= URL param (deep-link) → saved preference → dark default.
-  const [theme, setTheme] = useState(() => {
+  // Theme — dark by default, no in-page toggle. Light remains reachable via
+  // the ?theme=light deep-link (used for previews), but dark is the default.
+  const [theme] = useState(() => {
     if (typeof window !== 'undefined') {
       const urlTheme = new URLSearchParams(window.location.search).get('theme');
       if (urlTheme === 'light' || urlTheme === 'dark') return urlTheme;
-      return window.localStorage.getItem('zg-theme') || 'dark';
     }
     return 'dark';
   });
 
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('theme-light', theme === 'light');
-    window.localStorage.setItem('zg-theme', theme);
+    document.documentElement.classList.toggle('theme-light', theme === 'light');
   }, [theme]);
-
-  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
   // "home-2" pink variant — driven by the route, independent of light/dark.
   // Visiting /home-2 swaps the brand accent (#EA2E96) for both themes.
@@ -202,8 +193,6 @@ export default function App() {
   const wheelLockRef = useRef(false);
   const wheelReleaseRef = useRef(null);
   const navigateRef = useRef(() => {});
-  const modalOpenRef = useRef(false);
-  modalOpenRef.current = showVideoModal;
 
   // Refreshed every render so the listener always sees the current active section.
   navigateRef.current = (dir) => {
@@ -214,7 +203,6 @@ export default function App() {
 
   useEffect(() => {
     const onWheel = (e) => {
-      if (modalOpenRef.current) return;
       // Ignore tiny/horizontal scrolls (trackpad sideways gestures).
       if (Math.abs(e.deltaY) < 4 || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
 
@@ -293,23 +281,6 @@ export default function App() {
             </div>
             <div className="w-[1px] h-3 bg-line-strong"></div>
           </div>
-
-          {/* Light / Dark theme toggle */}
-          <button
-            onClick={toggleTheme}
-            className="group relative flex items-center justify-center w-10 h-10 rounded border border-line-strong hover:border-brand-red transition-all cursor-pointer text-ink overflow-hidden"
-            aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-            title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-          >
-            <Sun
-              size={18}
-              className={`absolute transition-all duration-500 ${theme === 'light' ? 'opacity-0 -rotate-90 scale-0' : 'opacity-100 rotate-0 scale-100 text-brand-red'}`}
-            />
-            <Moon
-              size={18}
-              className={`absolute transition-all duration-500 ${theme === 'light' ? 'opacity-100 rotate-0 scale-100 text-brand-red' : 'opacity-0 rotate-90 scale-0'}`}
-            />
-          </button>
 
           {/* Mobile menu toggle */}
           <button
@@ -413,16 +384,6 @@ export default function App() {
                   >
                     <span>Explore Companies</span>
                     <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
-
-                  <button
-                    onClick={() => setShowVideoModal(true)}
-                    className="group flex items-center gap-3 hover:text-brand-red text-ink-muted transition-colors py-3 cursor-pointer"
-                  >
-                    <div className="w-12 h-12 rounded-full border border-line-strong group-hover:border-brand-red flex items-center justify-center text-ink bg-surface/50 transition-all group-hover:scale-105 shadow-md">
-                      <Play size={16} className="fill-current translate-x-0.5" />
-                    </div>
-                    <span className="font-outfit text-xs font-bold uppercase tracking-wider">Watch brand reel</span>
                   </button>
                 </div>
               </div>
@@ -823,44 +784,7 @@ export default function App() {
         )}
       </main>
 
-      {/* 4. Brand Video Reel Modal (Ramsay Style) */}
-      {showVideoModal && (
-        <div className="fixed inset-0 z-50 bg-sidebar/95 flex items-center justify-center p-6 backdrop-blur-md animate-fade-in">
-          <div className="relative w-full max-w-4xl aspect-video border border-line-strong bg-surface shadow-2xl flex items-center justify-center flex-col">
-            <button
-              onClick={() => setShowVideoModal(false)}
-              className="absolute top-[-45px] right-0 flex items-center gap-2 text-ink-muted hover:text-ink text-xs uppercase font-outfit font-bold tracking-widest cursor-pointer"
-            >
-              <span>Close Video</span>
-              <X size={16} />
-            </button>
-
-            {/* Custom high-end mockup interface for video player */}
-            <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
-
-            <div className="z-10 flex flex-col items-center gap-4 text-center max-w-md p-6">
-              <div className="w-16 h-16 rounded-full border-2 border-brand-red flex items-center justify-center text-brand-red bg-brand-red/10 animate-pulse">
-                <Play size={24} className="fill-brand-red translate-x-0.5" />
-              </div>
-              <h4 className="text-ink text-lg font-bold font-outfit uppercase tracking-widest mt-2">ZeroGravity Group brand reel</h4>
-              <p className="text-ink-subtle text-xs leading-relaxed font-light">
-                This is a high-fidelity placeholder for the brand's executive documentary: "Ajay: Creative Precision." In production environment, this triggers a video player linking to Vimeo or YouTube.
-              </p>
-
-              <button
-                onClick={() => setShowVideoModal(false)}
-                className="mt-4 border border-line-strong hover:border-brand-red hover:text-ink text-ink-muted text-[10px] font-bold font-outfit uppercase tracking-widest px-6 py-2.5 bg-surface transition-all cursor-pointer"
-              >
-                Dismiss Player
-              </button>
-            </div>
-
-            <div className="absolute bottom-4 left-4 text-[9px] tracking-wider text-ink-subtle font-mono">AUDIO ENGINE: PCM / 24-BIT STEREO</div>
-          </div>
-        </div>
-      )}
-
-      {/* 5. Custom indicators on right edge matching Ramsay style */}
+      {/* 4. Custom indicators on right edge matching Ramsay style */}
       <div className="fixed right-6 top-1/2 -translate-y-1/2 z-40 hidden md:flex flex-col gap-3 pointer-events-auto">
         {SECTIONS.map((sec) => {
           const isCurrent = activeSection === sec.id;
