@@ -4,7 +4,6 @@ import {
   User,
   Briefcase,
   Trophy,
-  MessageSquare,
   Mail,
   Menu,
   X,
@@ -27,7 +26,6 @@ const SECTIONS = [
   { id: 'about', name: 'About MD', icon: User },
   { id: 'companies', name: 'Group Companies', icon: Briefcase },
   { id: 'achievements', name: 'Achievements', icon: Trophy },
-  { id: 'testimonials', name: 'Testimonials', icon: MessageSquare },
   { id: 'contact', name: 'Contact', icon: Mail }
 ];
 
@@ -36,7 +34,7 @@ const COMPANIES = [
   {
     id: 1,
     name: 'ZeroGravity Technologies',
-    sector: 'DeepTech & Enterprise AI Solutions',
+    sector: 'Software & Enterprise AI Solutions',
     description: 'Pioneering state-of-the-art enterprise software, cloud scalability, and artificial intelligence solutions. ZeroGravity Technologies drives digital modernization for global conglomerates.',
     metrics: [
       { label: 'Valuation / Capital', value: '$1.2 Billion' },
@@ -72,7 +70,7 @@ const COMPANIES = [
     bgClass: 'bg-amber-950/20 border-amber-500/20',
     services: [
       { name: 'Rigid Boxes', link: 'https://alphapackaging.ltd/' },
-      { name: 'Printing', link: 'https://alphapackaging.ltd/' },
+      { name: 'Printing', link: 'https://alphadesigns.in/' },
       { name: 'Albums', link: 'https://albumsbyzerogravity.com/' }
     ]
   },
@@ -97,27 +95,7 @@ const COMPANIES = [
 ];
 
 
-// Testimonials Data
-const TESTIMONIALS = [
-  {
-    id: 1,
-    quote: "Ajay doesn't just capture moments; he captures the soul of the occasion. ZeroGravity's creative team set a benchmark in wedding storytelling, delivering a premium masterpiece that went far beyond our expectations.",
-    author: "Ananya Ramakrishnan",
-    role: "Client & Founder, Aura Wellness"
-  },
-  {
-    id: 2,
-    quote: "As a partner, Ajay operates with a rare blend of creative purity and entrepreneurial steel. He has successfully scaled ZeroGravity from a local photography studio into a diverse premium conglomerate.",
-    author: "Ranganathan Swamy",
-    role: "Managing Director, Chennai Ventures"
-  },
-  {
-    id: 3,
-    quote: "Ajay possesses a unique ability to align technical precision with artistic imagination. His execution across Technologies, Digital, and Manufacturing divisions is a testament to his visionary leadership.",
-    author: "Siddharth Mehta",
-    role: "Partner, Apex Legal Partners"
-  }
-];
+// Testimonials Data removed
 
 export default function App() {
   // Navigation State
@@ -133,7 +111,6 @@ export default function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [activeCompany, setActiveCompany] = useState(COMPANIES[0]);
   const [activeTab, setActiveTab] = useState('journey'); // For About page
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -361,7 +338,7 @@ export default function App() {
               {/* Executive Image */}
               <img
                 src="/md_hero_portrait.jpg"
-                alt="Julian Vance Portrait"
+                alt="Ajay, Founder & Managing Director of ZeroGravity Group"
                 className="absolute inset-0 w-full h-full object-cover object-[80%_center] transition-all duration-1000 scale-102"
               />
 
@@ -383,7 +360,7 @@ export default function App() {
               <div className="absolute inset-0 bg-gradient-to-l from-[#0b0b0c] via-[#0d0d0e]/30 to-transparent z-10 hidden md:block"></div>
               <img
                 src="/md_about.jpg"
-                alt="Julian Vance in boardroom"
+                alt="Ajay in boardroom meetings representing ZeroGravity Group"
                 className="absolute inset-0 w-full h-full object-cover object-right transition-all duration-1000"
               />
               <div className="absolute bottom-10 left-10 z-20 text-left bg-neutral-950/80 backdrop-blur-md border border-neutral-800 p-6 max-w-sm hidden xl:block">
@@ -574,9 +551,9 @@ export default function App() {
                 <div className="relative pl-6 border-l border-neutral-900 space-y-8">
                   {[
                     { year: '2026', title: 'Global Leader of the Year', desc: 'Awarded by the Clean Energy Forum for leading funding and scaling of smarter grids.' },
-                    { year: '2024', title: 'Apex Acquisition Milestone', desc: 'Successfully structured the $820M acquisition of Apex Technologies VC assets.' },
+                    { year: '2024', title: 'Zerogravity Technologies Milestone', desc: 'Successfully structured the $820M acquisition of Apex Technologies VC assets.' },
                     { year: '2021', title: 'Council Seat Appointment', desc: 'Appointed Advisor to the Federal Tech Board on private-public innovation partnerships.' },
-                    { year: '2018', title: 'Vance Capital Fund II Launch', desc: 'Closed the second venture capital fund at a record $600M under management.' }
+                    { year: '2018', title: 'ZeroGravity Ventures Launch', desc: 'Closed the first major investment fund to scale and accelerate DeepTech startups.' }
                   ].map((milestone, i) => (
                     <div key={i} className="relative group">
                       {/* Bullet circle */}
@@ -598,7 +575,7 @@ export default function App() {
 
                 <div className="grid grid-cols-2 gap-8">
                   {[
-                    { num: '$2.5B+', label: 'Asset Value Managed', desc: 'Total asset value managed across our holding group.' },
+                    { num: '$450M+', label: 'Asset Value Managed', desc: 'Total asset value managed across our holding group.' },
                     { num: '15+', label: 'Portfolio Exits', desc: 'Successful mergers, acquisitions, and public IPO list exits.' },
                     { num: '40k+', label: 'Global Workforce', desc: 'Total employee workforce across our portfolio group.' },
                     { num: '320+', label: 'Industry Patented Tech', desc: 'Proprietary technologies licensed worldwide.' }
@@ -615,81 +592,7 @@ export default function App() {
           </section>
         )}
 
-        {/* ================= TESTIMONIALS SECTION ================= */}
-        {shouldRender('testimonials') && (
-          <section id="testimonials" className={`section-container ${getSectionClass('testimonials')}`}>
-            {/* Left Panel: Quote Slider */}
-            <div className="panel-left split-transition bg-[#0c0c0d] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-neutral-900 bg-grid-pattern">
-              <div className="max-w-xl">
-                <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">BOARD & PEER TESTIMONIALS</span>
-                <h2 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight mb-8 font-light">
-                  Partner <br /><span className="font-semibold italic text-neutral-300">Perspectives</span>.
-                </h2>
 
-                <div className="relative min-h-[220px]">
-                  {TESTIMONIALS.map((item, idx) => (
-                    <div
-                      key={item.id}
-                      className={`transition-all duration-500 absolute inset-0 flex flex-col justify-between ${idx === currentTestimonial ? 'opacity-100 translate-x-0 pointer-events-auto' : 'opacity-0 translate-x-10 pointer-events-none'}`}
-                    >
-                      <p className="font-serif italic text-lg md:text-xl text-neutral-200 leading-relaxed mb-6">
-                        "{item.quote}"
-                      </p>
-                      <div>
-                        <span className="text-white text-base font-bold block">{item.author}</span>
-                        <span className="text-brand-red text-xs uppercase tracking-wider font-outfit font-bold">{item.role}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Slider Controls */}
-                <div className="flex items-center gap-4 mt-8">
-                  <button
-                    onClick={() => setCurrentTestimonial(prev => (prev === 0 ? TESTIMONIALS.length - 1 : prev - 1))}
-                    className="w-10 h-10 rounded border border-neutral-900 bg-neutral-950/50 flex items-center justify-center text-neutral-400 hover:text-white hover:border-brand-red transition-all cursor-pointer"
-                  >
-                    <ChevronLeft size={16} />
-                  </button>
-                  <span className="text-xs font-outfit text-neutral-500 font-bold tracking-widest">
-                    {currentTestimonial + 1} / {TESTIMONIALS.length}
-                  </span>
-                  <button
-                    onClick={() => setCurrentTestimonial(prev => (prev === TESTIMONIALS.length - 1 ? 0 : prev + 1))}
-                    className="w-10 h-10 rounded border border-neutral-900 bg-neutral-950/50 flex items-center justify-center text-neutral-400 hover:text-white hover:border-brand-red transition-all cursor-pointer"
-                  >
-                    <ChevronRight size={16} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Right Panel: Global Footprint Footnotes */}
-            <div className="panel-right split-transition bg-[#09090a] flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-dot-pattern">
-              <div className="max-w-xl">
-                <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">GLOBAL OPERATION NETWORKS</span>
-                <h3 className="text-white text-2xl font-serif italic mb-8 text-neutral-300">Generational reach across key capital hubs.</h3>
-
-                <div className="space-y-6">
-                  {[
-                    { hub: 'Chennai — HQ & Digital Labs', details: 'Primary creative design studios, photography editing headquarters, and tech development labs. Josier St, Nungambakkam.' },
-                    { hub: 'Mumbai — Creative Studio', details: 'ZeroGravity Digital regional headquarters and corporate brand activation division.' },
-                    { hub: 'Bangalore — Tech Hub', details: 'ZeroGravity Technologies enterprise software engineering seat and core AI model development lab.' },
-                    { hub: 'Singapore — South Asia Net', details: 'Managing global wedding photography bookings and international corporate activations.' }
-                  ].map((network, i) => (
-                    <div key={i} className="flex gap-4 items-start border-b border-neutral-900/60 pb-5">
-                      <div className="w-2 h-2 rounded-full bg-brand-red mt-1.5 flex-shrink-0 animate-pulse"></div>
-                      <div>
-                        <h4 className="text-white text-sm font-bold uppercase tracking-wider font-outfit mb-1">{network.hub}</h4>
-                        <p className="text-neutral-400 text-xs leading-relaxed font-light">{network.details}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        )}
 
         {/* ================= CONTACT SECTION ================= */}
         {shouldRender('contact') && (
@@ -821,7 +724,7 @@ export default function App() {
                   <div className="absolute w-[80%] h-[1px] bg-neutral-900 -rotate-45"></div>
                   <div className="absolute w-[60%] h-[1px] bg-neutral-900/60 rotate-90"></div>
 
-                  {/* Central marker representing Vance Tower */}
+                  {/* Central marker representing ZeroGravity HQ */}
                   <div className="relative z-10 flex flex-col items-center">
                     <div className="w-5 h-5 rounded-full bg-brand-red/20 border border-brand-red flex items-center justify-center animate-bounce">
                       <div className="w-2.5 h-2.5 rounded-full bg-brand-red"></div>
@@ -858,9 +761,9 @@ export default function App() {
               <div className="w-16 h-16 rounded-full border-2 border-brand-red flex items-center justify-center text-brand-red bg-brand-red/10 animate-pulse">
                 <Play size={24} className="fill-brand-red translate-x-0.5" />
               </div>
-              <h4 className="text-white text-lg font-bold font-outfit uppercase tracking-widest mt-2">Vance holdings brand reel</h4>
+              <h4 className="text-white text-lg font-bold font-outfit uppercase tracking-widest mt-2">ZeroGravity Group brand reel</h4>
               <p className="text-neutral-500 text-xs leading-relaxed font-light">
-                This is a high-fidelity placeholder for the brand's executive documentary: "Julian Vance: Generational Value." In production environment, this triggers a video player linking to Vimeo or YouTube.
+                This is a high-fidelity placeholder for the brand's executive documentary: "Ajay: Creative Precision." In production environment, this triggers a video player linking to Vimeo or YouTube.
               </p>
 
               <button
