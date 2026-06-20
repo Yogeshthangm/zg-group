@@ -146,6 +146,13 @@ export default function App() {
 
   const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
 
+  // "home-2" pink variant — driven by the route, independent of light/dark.
+  // Visiting /home-2 swaps the brand accent (#EA2E96) for both themes.
+  useEffect(() => {
+    const path = window.location.pathname.replace(/\/+$/, '');
+    document.documentElement.classList.toggle('variant-pink', path.endsWith('/home-2'));
+  }, []);
+
   useEffect(() => {
     // Set a tiny delay for hero text to stagger in on first load
     const timer = setTimeout(() => setHeroStaggerVisible(true), 300);
