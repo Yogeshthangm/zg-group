@@ -368,7 +368,7 @@ export default function App() {
           <section id="hero" className={`section-container ${getSectionClass('hero')}`}>
             {/* Left Panel: Ramsay typography + editorial text */}
             <div className="panel-left split-transition flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-panel bg-grid-pattern overflow-hidden">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 {/* Staggered Serif Word Reveals (IvyPresto heading style) */}
                 <div className="mb-6 font-serif italic">
                   <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-ink mb-2 leading-none">
@@ -463,7 +463,7 @@ export default function App() {
 
             {/* Right Panel: Biography and Tabs */}
             <div className="panel-right split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-dot-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">BACKGROUND & PHILOSOPHY</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
                   Architecting Future <br /><span className="font-semibold italic text-ink-muted">Enterprises</span>.
@@ -530,7 +530,7 @@ export default function App() {
           <section id="companies" className={`section-container ${getSectionClass('companies')}`}>
             {/* Left Panel: Interactive List of Portfolio Companies */}
             <div className="panel-left split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-grid-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">ZEROGRAVITY GROUP</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
                   Our Portfolio <br /><span className="font-semibold italic text-ink-muted">Companies</span>.
@@ -564,7 +564,7 @@ export default function App() {
 
             {/* Right Panel: Selected Company Deep-Dive */}
             <div className="panel-right split-transition bg-panel-2 flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24">
-              <div className="max-w-lg">
+              <div className="max-w-lg my-auto">
                 <div className={`p-8 border rounded-lg ${activeCompany.bgClass} backdrop-blur-md`}>
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 rounded bg-ink/5 border border-ink/10 flex items-center justify-center text-brand-red">
@@ -634,7 +634,7 @@ export default function App() {
           <section id="achievements" className={`section-container ${getSectionClass('achievements')}`}>
             {/* Left Panel: Milestone Timeline */}
             <div className="panel-left split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-dot-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">LEADERSHIP TIMELINE</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
                   Milestones & <br /><span className="font-semibold italic text-ink-muted">Accolades</span>.
@@ -661,7 +661,7 @@ export default function App() {
 
             {/* Right Panel: Impact Metrics Grid */}
             <div className="panel-right split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">AGGREGATE QUANTIFIABLE IMPACT</span>
                 <h3 className="text-2xl font-serif italic mb-10 text-ink-muted">Measuring a legacy by the numbers.</h3>
 
@@ -691,7 +691,7 @@ export default function App() {
           <section id="contact" className={`section-container ${getSectionClass('contact')}`}>
             {/* Left Panel: Minimalist Contact Form */}
             <div className="panel-left split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-dot-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">INQUIRIES & ENGAGEMENTS</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
                   Initiate a <br /><span className="font-semibold italic text-ink-muted">Dialogue</span>.
@@ -777,7 +777,7 @@ export default function App() {
 
             {/* Right Panel: Office details & mockup map */}
             <div className="panel-right split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
-              <div className="max-w-xl">
+              <div className="max-w-xl my-auto">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">OFFICE DIRECTORY</span>
                 <h3 className="text-2xl font-serif italic mb-8 text-ink-muted">ZeroGravity HQ.</h3>
 
