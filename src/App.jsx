@@ -273,7 +273,7 @@ export default function App() {
       <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-canvas/60 backdrop-blur-lg border-b border-line/70 shadow-sm pointer-events-auto">
         <div className="flex items-center gap-3">
           <img src="/logo-zerogravity.webp" alt="ZeroGravity Group logo" className="w-8 h-8 object-contain" />
-          <span className="font-outfit font-bold tracking-widest text-lg uppercase text-ink">Zerogravity Group</span>
+          <span className="font-serif text-xl tracking-wide text-ink">Zerogravity Group</span>
         </div>
 
         {/* Right-side controls cluster */}
@@ -783,50 +783,32 @@ export default function App() {
 
                 <div className="space-y-6 mb-10 text-ink-muted">
                   <div className="flex gap-4 items-start">
-                    <MapPin size={20} className="text-brand-red mt-1" />
+                    <Mail size={20} className="text-brand-red mt-1" />
                     <div>
-                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">HQ ADDRESS</span>
-                      <p className="text-sm font-light text-ink-muted">42, 50, Josier St, Tirumurthy Nagar, Nungambakkam, Tamil Nadu 600034</p>
+                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">EMAIL</span>
+                      <a href="mailto:office@zerogravitygroup.com" className="text-sm font-light text-ink-muted hover:text-brand-red transition-colors">office@zerogravitygroup.com</a>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start">
-                    <Phone size={20} className="text-brand-red mt-1" />
+                    <Building size={20} className="text-brand-red mt-1" />
                     <div>
-                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">GENERAL CONTACT</span>
-                      <p className="text-sm font-light text-ink-muted">+91 (44) 4305-6677</p>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 items-start">
-                    <FileText size={20} className="text-brand-red mt-1" />
-                    <div>
-                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">SECURE ENCRYPTED COMMUNICATIONS</span>
-                      <p className="text-sm font-light text-ink-muted">ajay-secure-pgp-key.txt</p>
+                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">EXECUTIVE OFFICE</span>
+                      <p className="text-sm font-light text-ink-muted">Private engagements &amp; meetings by appointment only.</p>
                     </div>
                   </div>
                 </div>
 
-                {/* Styled minimalist mockup map */}
-                <div className="border border-line bg-surface p-4 h-[180px] rounded relative overflow-hidden flex items-center justify-center">
-                  <div className="absolute inset-0 bg-dot-pattern opacity-30"></div>
-
-                  {/* Mock map elements */}
-                  <div className="absolute w-[80%] h-[1px] bg-line-strong rotate-12"></div>
-                  <div className="absolute w-[80%] h-[1px] bg-line-strong -rotate-45"></div>
-                  <div className="absolute w-[60%] h-[1px] bg-line-strong/60 rotate-90"></div>
-
-                  {/* Central marker representing ZeroGravity HQ */}
-                  <div className="relative z-10 flex flex-col items-center">
-                    <div className="w-5 h-5 rounded-full bg-brand-red/20 border border-brand-red flex items-center justify-center animate-bounce">
-                      <div className="w-2.5 h-2.5 rounded-full bg-brand-red"></div>
-                    </div>
-                    <span className="text-[9px] uppercase tracking-widest font-extrabold font-outfit bg-surface border border-line-strong px-2 py-0.5 rounded text-ink mt-1 shadow-md">
-                      ZEROGRAVITY STUDIO
-                    </span>
-                  </div>
-
-                  <span className="absolute bottom-2 right-3 text-[9px] tracking-wider text-ink-subtle font-mono">CHENNAI GRID 13.0612° N, 80.2415° E</span>
+                {/* Live location map — pinned to HQ */}
+                <div className="border border-line rounded overflow-hidden h-[200px]">
+                  <iframe
+                    title="ZeroGravity Group — 42, 50 Josier St, Nungambakkam, Chennai"
+                    src="https://maps.google.com/maps?q=42%2C%2050%2C%20Josier%20St%2C%20Tirumurthy%20Nagar%2C%20Nungambakkam%2C%20Chennai%2C%20Tamil%20Nadu%20600034&z=16&output=embed"
+                    className="w-full h-full border-0"
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  ></iframe>
                 </div>
               </div>
             </div>

@@ -1,19 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Outfit:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..900&display=swap');
 @import "tailwindcss";
 
-@font-face {
-  font-family: 'TempoFont';
-  src: url('/TempoFontItalic.ttf') format('truetype');
-  font-weight: normal;
-  font-style: italic;
-}
-
-
-
 @theme {
-  --font-serif: "TempoFont", "EB Garamond", serif;
-  --font-sans: "Outfit", sans-serif;
-  --font-outfit: "Outfit", sans-serif;
+  /* Premium editorial pairing: Fraunces (display serif) + Inter (UI/body sans).
+     --font-outfit kept as an alias so existing font-outfit utilities map to Inter. */
+  --font-serif: "Fraunces", "EB Garamond", serif;
+  --font-sans: "Inter", sans-serif;
+  --font-outfit: "Inter", sans-serif;
 
   --color-brand-red: #e62112;
   /* Divergent bold red */
@@ -144,9 +137,14 @@ body {
 
 /* Text split animations */
 .line-mask {
-  overflow: hidden;
   display: inline-block;
   vertical-align: bottom;
+  /* Reveal the font's descenders (g, y) while still masking the slide-up
+     animation. overflow:clip + clip-margin avoids the descender clipping
+     that plain overflow:hidden caused with the new serif. */
+  overflow: hidden;
+  overflow: clip;
+  overflow-clip-margin: 0.35em;
 }
 
 /* Stagger animations for list items and grids */
@@ -321,13 +319,17 @@ body {
 
 /* Global Typography Overrides */
 body {
-  font-family: 'Outfit', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.011em; /* Inter reads tighter and more premium */
 }
 
 h1, h2, h3, h4, .font-serif {
-  font-family: 'TempoFont', 'EB Garamond', serif !important;
+  font-family: 'Fraunces', 'EB Garamond', serif !important;
   font-style: italic !important;
-  font-weight: 300 !important; /* Italic light weight */
+  font-weight: 300 !important; /* Light italic display */
+  letter-spacing: -0.01em;
 }
 
 /* Ensure child elements inside serif containers inherit the serif style */
