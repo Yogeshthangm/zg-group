@@ -14,6 +14,7 @@
 - **Heading text fixed** — letters with tails (like g and y) in the big headings are no longer cut off after the font change.
 - **Contact details trimmed** — removed the street address, phone number, and the encrypted-key line from the Contact section; it now shows just the email and an "Executive Office – by appointment only" note.
 - **Correct location map** — replaced the placeholder map with a real, interactive map pinned to the actual office location.
+- **Pink version (separate "home-2" page)** — added a second version of the site with a pink brand colour (#EA2E96) at the /home-2 page. It works in both light and dark modes, and the original red site is unchanged.
 - **Dark mode unchanged** — the original dark design is fully preserved; everything above is in addition to it.
 
 *Optional next step: match the small sidebar logo to the new header logo for full consistency.*
