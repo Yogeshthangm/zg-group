@@ -16,7 +16,10 @@ import {
   Building,
   CheckCircle,
   FileText,
-  ChevronLeft
+  ChevronLeft,
+  Sun,
+  Moon,
+  Monitor
 } from 'lucide-react';
 
 // Section Definitions
@@ -33,7 +36,7 @@ const COMPANIES = [
   {
     id: 1,
     name: 'ZeroGravity Technologies',
-    sector: 'Software & Enterprise AI Solutions',
+    sector: 'Software Development',
     description: 'Pioneering state-of-the-art enterprise software, cloud scalability, and artificial intelligence solutions. ZeroGravity Technologies drives digital modernization for global conglomerates.',
     metrics: [
       { label: 'Valuation / Capital', value: '$1.2 Billion' },
@@ -46,7 +49,7 @@ const COMPANIES = [
   {
     id: 2,
     name: 'ZeroGravity Digital',
-    sector: 'Creative Studio & Branding',
+    sector: 'Marketing',
     description: 'A world-class digital agency crafting premium brand identities, high-fidelity UI/UX designs, and experiential marketing campaigns that captivate audiences globally.',
     metrics: [
       { label: 'Active Clients', value: '40+ Brands' },
@@ -59,7 +62,7 @@ const COMPANIES = [
   {
     id: 3,
     name: 'ZeroGravity Manufacturing',
-    sector: 'Precision Component Engineering & Packaging',
+    sector: 'Manufacturing',
     description: 'Delivering advanced precision engineering, industrial automation components, and advanced machinery manufacturing, adhering to world-class manufacturing standards.',
     metrics: [
       { label: 'Production Output', value: '2.4M Units/Yr' },
@@ -76,7 +79,7 @@ const COMPANIES = [
   {
     id: 4,
     name: 'ZeroGravity Events',
-    sector: 'Experiential Production & Events',
+    sector: 'Events',
     description: 'Creating high-impact executive events, corporate summits, and premium brand activation experiences that engage leaders and redefine community hosting.',
     metrics: [
       { label: 'Annual Attendees', value: '200k+ People' },
@@ -123,25 +126,43 @@ export default function App() {
   // Staggered words for Hero section
   const [heroStaggerVisible, setHeroStaggerVisible] = useState(false);
 
-  // Theme — dark by default, no in-page toggle. Light remains reachable via
-  // the ?theme=light deep-link (used for previews), but dark is the default.
-  const [theme] = useState(() => {
+  // Theme mode: 'light' (default) | 'dark' | 'system' (follow the browser/OS).
+  // Persisted; ?theme= still overrides for previews. Toggle cycles light → dark → auto.
+  const [themeMode, setThemeMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const urlTheme = new URLSearchParams(window.location.search).get('theme');
       if (urlTheme === 'light' || urlTheme === 'dark') return urlTheme;
+      const stored = window.localStorage.getItem('zg-theme');
+      if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
     }
-    return 'dark';
+    return 'light';
   });
 
   useEffect(() => {
-    document.documentElement.classList.toggle('theme-light', theme === 'light');
-  }, [theme]);
+    const root = document.documentElement;
+    const mql = window.matchMedia('(prefers-color-scheme: dark)');
+    const apply = () => {
+      const isDark = themeMode === 'dark' || (themeMode === 'system' && mql.matches);
+      root.classList.toggle('theme-light', !isDark);
+    };
+    apply();
+    window.localStorage.setItem('zg-theme', themeMode);
+    // In system mode, react live to OS light/dark changes.
+    if (themeMode === 'system') {
+      mql.addEventListener('change', apply);
+      return () => mql.removeEventListener('change', apply);
+    }
+  }, [themeMode]);
 
-  // "home-2" pink variant — driven by the route, independent of light/dark.
-  // Visiting /home-2 swaps the brand accent (#EA2E96) for both themes.
+  // Cycle the toggle: light → dark → auto (system) → light …
+  const cycleTheme = () =>
+    setThemeMode((prev) => (prev === 'light' ? 'dark' : prev === 'dark' ? 'system' : 'light'));
+
+  // Accent variant by route: pink is the default site accent; /home-2 shows
+  // the original red/orange accent instead. Independent of light/dark.
   useEffect(() => {
     const path = window.location.pathname.replace(/\/+$/, '');
-    document.documentElement.classList.toggle('variant-pink', path.endsWith('/home-2'));
+    document.documentElement.classList.toggle('variant-orange', path.endsWith('/home-2'));
   }, []);
 
   useEffect(() => {
@@ -281,6 +302,18 @@ export default function App() {
             </div>
             <div className="w-[1px] h-3 bg-line-strong"></div>
           </div>
+
+          {/* Theme toggle — Light → Dark → Auto (follows the browser/OS) */}
+          <button
+            onClick={cycleTheme}
+            className="flex items-center justify-center w-10 h-10 rounded border border-line-strong hover:border-brand-red transition-all cursor-pointer text-brand-red"
+            aria-label={`Theme: ${themeMode === 'system' ? 'auto' : themeMode}. Click to change (light, dark, auto).`}
+            title={`Theme: ${themeMode === 'system' ? 'Auto — follows your device' : themeMode === 'dark' ? 'Dark' : 'Light'} · click to change`}
+          >
+            {themeMode === 'light' && <Sun size={18} />}
+            {themeMode === 'dark' && <Moon size={18} />}
+            {themeMode === 'system' && <Monitor size={18} />}
+          </button>
 
           {/* Mobile menu toggle */}
           <button

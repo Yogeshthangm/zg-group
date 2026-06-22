@@ -9,5 +9,11 @@
 - Fixed the headings cutting off the bottoms of letters like g and y.
 - Cleaned up the contact section: removed the address, phone number, and PGP key line. It now shows the email and an "Executive Office, by appointment only" note.
 - Replaced the placeholder map with a real map pinned to the office.
-- Added a pink version of the site at /home-2.
+- Made pink the default brand color across the site. The original red version is still available at /home-2.
 - Removed the "Watch Brand Reel" button from the hero.
+
+## Latest updates
+
+- Added a theme switcher in the header — Light, Dark, or Auto (Auto follows your device's setting). The site opens in Light by default.
+- Renamed the company categories to Software Development, Marketing, Manufacturing, and Events.
+- Fixed the /home-2 page so it loads correctly on the live (Vercel) site.

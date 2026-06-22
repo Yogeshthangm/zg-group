@@ -8,8 +8,8 @@
   --font-sans: "Inter", sans-serif;
   --font-outfit: "Inter", sans-serif;
 
-  --color-brand-red: #e62112;
-  /* Divergent bold red */
+  --color-brand-red: #EA2E96;
+  /* Brand pink — default accent */
   --color-brand-dark: #0b0b0c;
   --color-brand-gray: #18181c;
   --color-brand-light: #f5f4f0;
@@ -66,11 +66,11 @@ html.theme-light {
   color-scheme: light;
 }
 
-/* "home-2" pink variant — overrides only the brand accent, so it composes
-   with both light and dark themes. Applied via the .variant-pink class on
-   <html> when the route is /home-2. */
-html.variant-pink {
-  --color-brand-red: #EA2E96;
+/* "home-2" variant — pink is now the default accent; /home-2 shows the
+   original red/orange accent instead, via the .variant-orange class on
+   <html>. Overrides only the accent, so it composes with light and dark. */
+html.variant-orange {
+  --color-brand-red: #e62112;
 }
 
 /* Smooth cross-fade on theme switch (colors only — leaves panel transforms/animations untouched). */
