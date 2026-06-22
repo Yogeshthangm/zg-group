@@ -35,7 +35,7 @@ const SECTIONS = [
 const COMPANIES = [
   {
     id: 1,
-    name: 'ZeroGravity Technologies',
+    name: 'Software Development',
     sector: 'Software Development',
     description: 'Pioneering state-of-the-art enterprise software, cloud scalability, and artificial intelligence solutions. ZeroGravity Technologies drives digital modernization for global conglomerates.',
     metrics: [
@@ -48,7 +48,7 @@ const COMPANIES = [
   },
   {
     id: 2,
-    name: 'ZeroGravity Digital',
+    name: 'Marketing',
     sector: 'Marketing',
     description: 'A world-class digital agency crafting premium brand identities, high-fidelity UI/UX designs, and experiential marketing campaigns that captivate audiences globally.',
     metrics: [
@@ -61,7 +61,7 @@ const COMPANIES = [
   },
   {
     id: 3,
-    name: 'ZeroGravity Manufacturing',
+    name: 'Manufacturing',
     sector: 'Manufacturing',
     description: 'Delivering advanced precision engineering, industrial automation components, and advanced machinery manufacturing, adhering to world-class manufacturing standards.',
     metrics: [
@@ -78,7 +78,7 @@ const COMPANIES = [
   },
   {
     id: 4,
-    name: 'ZeroGravity Events',
+    name: 'Events',
     sector: 'Events',
     description: 'Creating high-impact executive events, corporate summits, and premium brand activation experiences that engage leaders and redefine community hosting.',
     metrics: [
@@ -289,7 +289,7 @@ export default function App() {
       <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-canvas/60 backdrop-blur-lg border-b border-line/70 shadow-sm pointer-events-auto">
         <div className="flex items-center gap-3">
           <img src="/logo-zerogravity.webp" alt="ZeroGravity Group logo" className="w-8 h-8 object-contain" />
-          <span className="font-serif text-xl tracking-wide text-ink">Zerogravity Group</span>
+          <span className="font-serif text-xl tracking-wide text-ink">ZERO GRAVITY GROUP</span>
         </div>
 
         {/* Right-side controls cluster */}
@@ -536,9 +536,6 @@ export default function App() {
                         className={`w-full text-left p-6 border transition-all duration-300 cursor-pointer flex items-center justify-between ${isSelected ? 'border-brand-red bg-brand-red/5' : 'border-line bg-surface/20 hover:border-line-strong'}`}
                       >
                         <div>
-                          <span className={`text-[10px] font-outfit uppercase tracking-widest block mb-1.5 ${isSelected ? 'text-brand-red font-bold' : 'text-ink-subtle'}`}>
-                            {company.sector}
-                          </span>
                           <h3 className="text-ink font-bold text-lg md:text-xl">{company.name}</h3>
                         </div>
                         <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-brand-red text-on-accent bg-brand-red' : 'border-line-strong text-ink-subtle group-hover:border-ink-subtle'}`}>
@@ -679,8 +676,8 @@ export default function App() {
         {shouldRender('contact') && (
           <section id="contact" className={`section-container ${getSectionClass('contact')}`}>
             {/* Left Panel: Minimalist Contact Form */}
-            <div className="panel-left split-transition bg-canvas flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 border-r border-line bg-dot-pattern">
-              <div className="max-w-xl my-auto">
+            <div className="panel-left split-transition bg-canvas flex flex-col justify-start items-center pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-dot-pattern" style={{ width: '100%' }}>
+              <div className="max-w-xl my-auto w-full">
                 <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">INQUIRIES & ENGAGEMENTS</span>
                 <h2 className="text-3xl md:text-5xl font-serif text-ink tracking-tight leading-tight mb-8 font-light">
                   Initiate a <br /><span className="font-semibold italic text-ink-muted">Dialogue</span>.
@@ -741,14 +738,14 @@ export default function App() {
                         onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                         rows="4"
                         className="floating-label-input w-full bg-transparent text-ink text-sm py-3 px-1 placeholder-transparent focus:border-brand-red outline-none resize-none"
-                        placeholder="Message / Project Scope"
+                        placeholder="Subject"
                         required
                       ></textarea>
                       <label
                         htmlFor="message"
                         className="absolute left-1 top-3 text-xs uppercase tracking-widest text-ink-subtle transition-all duration-300 pointer-events-none select-none"
                       >
-                        Message / Project Scope
+                        Subject
                       </label>
                     </div>
 
@@ -761,44 +758,6 @@ export default function App() {
                     </button>
                   </form>
                 )}
-              </div>
-            </div>
-
-            {/* Right Panel: Office details & mockup map */}
-            <div className="panel-right split-transition bg-panel flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-grid-pattern">
-              <div className="max-w-xl my-auto">
-                <span className="text-brand-red text-xs font-bold tracking-[0.25em] uppercase block mb-3 font-outfit">OFFICE DIRECTORY</span>
-                <h3 className="text-2xl font-serif italic mb-8 text-ink-muted">ZeroGravity HQ.</h3>
-
-                <div className="space-y-6 mb-10 text-ink-muted">
-                  <div className="flex gap-4 items-start">
-                    <Mail size={20} className="text-brand-red mt-1" />
-                    <div>
-                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">EMAIL</span>
-                      <a href="mailto:office@zerogravitygroup.com" className="text-sm font-light text-ink-muted hover:text-brand-red transition-colors">office@zerogravitygroup.com</a>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-4 items-start">
-                    <Building size={20} className="text-brand-red mt-1" />
-                    <div>
-                      <span className="text-xs uppercase font-outfit text-ink-subtle font-bold block mb-1">EXECUTIVE OFFICE</span>
-                      <p className="text-sm font-light text-ink-muted">Private engagements &amp; meetings by appointment only.</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Live location map — pinned to HQ */}
-                <div className="border border-line rounded overflow-hidden h-[200px]">
-                  <iframe
-                    title="ZeroGravity Group — 42, 50 Josier St, Nungambakkam, Chennai"
-                    src="https://maps.google.com/maps?q=42%2C%2050%2C%20Josier%20St%2C%20Tirumurthy%20Nagar%2C%20Nungambakkam%2C%20Chennai%2C%20Tamil%20Nadu%20600034&z=16&output=embed"
-                    className="w-full h-full border-0"
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    allowFullScreen
-                  ></iframe>
-                </div>
               </div>
             </div>
           </section>

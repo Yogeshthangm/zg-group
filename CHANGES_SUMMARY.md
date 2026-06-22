@@ -22,3 +22,7 @@
 - Removed the email from the header.
 - Removed the hover tooltips on the sidebar menu icons.
 - Updated the brand pink to a deeper shade (#A00058).
+- Simplified the company names to Software Development, Marketing, Manufacturing, and Events (removed the small category label above each).
+- Removed the office directory (address + map) from the Contact section; the contact form is now centered.
+- Renamed the contact form's message field to "Subject".
+- Set the header wordmark to all caps: ZERO GRAVITY GROUP.
