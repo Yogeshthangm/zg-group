@@ -18,3 +18,7 @@
 - Renamed the company categories to Software Development, Marketing, Manufacturing, and Events.
 - Fixed the /home-2 page so it loads correctly on the live (Vercel) site.
 - Pointed the LinkedIn button to the founder's profile.
+- Rewrote the About section (Journey, Vision, Mission) to be about general entrepreneurship instead of photography/weddings.
+- Removed the email from the header.
+- Removed the hover tooltips on the sidebar menu icons.
+- Updated the brand pink to a deeper shade (#A00058).

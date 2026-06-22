@@ -294,15 +294,6 @@ export default function App() {
 
         {/* Right-side controls cluster */}
         <div className="flex items-center gap-4 md:gap-6">
-          {/* Ramsay-style header information */}
-          <div className="hidden lg:flex items-center gap-8 text-xs text-ink-muted font-sans">
-            <div className="flex items-center gap-2">
-              <span className="text-brand-red font-medium">EMAIL:</span>
-              <a href="mailto:office@zerogravitygroup.com" className="hover:text-ink transition-colors">office@zerogravitygroup.com</a>
-            </div>
-            <div className="w-[1px] h-3 bg-line-strong"></div>
-          </div>
-
           {/* Theme toggle — Light → Dark → Auto (follows the browser/OS) */}
           <button
             onClick={cycleTheme}
@@ -354,9 +345,6 @@ export default function App() {
                 <div className={`absolute left-0 top-0 h-full w-[3px] bg-brand-red transition-transform duration-300 ${isCurrent ? 'scale-y-100' : 'scale-y-0 group-hover:scale-y-50'}`}></div>
 
                 <IconComponent size={20} className={`transition-all duration-300 ${isCurrent ? 'text-brand-red scale-110' : 'group-hover:scale-105'}`} />
-                <span className={`text-[10px] tracking-wider mt-1.5 font-outfit font-medium uppercase opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block absolute left-[80px] bg-surface text-ink px-3 py-1.5 border border-line-strong rounded pointer-events-none whitespace-nowrap z-50 shadow-xl`}>
-                  {sec.name}
-                </span>
               </button>
             );
           })}
@@ -457,7 +445,7 @@ export default function App() {
                 className="absolute inset-0 w-full h-full object-cover object-right transition-all duration-1000"
               />
               <div className="absolute bottom-10 left-10 z-20 text-left bg-surface/80 backdrop-blur-md border border-line-strong p-6 max-w-sm hidden xl:block">
-                <p className="font-serif italic text-lg text-ink mb-2">"Behind the lens is where precision meets imagination."</p>
+                <p className="font-serif italic text-lg text-ink mb-2">"Great enterprises are built where vision meets relentless execution."</p>
                 <span className="text-xs font-outfit uppercase tracking-widest text-brand-red font-bold">— Ajay</span>
               </div>
             </div>
@@ -491,10 +479,10 @@ export default function App() {
                   {activeTab === 'journey' && (
                     <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light">
                       <p>
-                        Ajay’s journey into photography began as a spontaneous passion that soon evolved into a lifelong calling. Originally trained as an engineer, he discovered his true creative spirit behind the lens—where precision met imagination.
+                        Ajay's journey into business began with a simple conviction—that bold ideas, executed with discipline, can reshape entire industries. Originally trained as an engineer, he learned early that building great companies demands the same rigour as solving hard technical problems, paired with the vision to see what others miss.
                       </p>
                       <p>
-                        Today, Ajay is not only a renowned photographer but also a driven entrepreneur, an avid traveler, and a devoted car enthusiast. With an exceptional eye for detail and a bold creative vision, he continues to push boundaries, capturing stories that transcend the ordinary and celebrate the extraordinary.
+                        Today, Ajay is the Founder and Managing Director of ZeroGravity Group, a diversified holding company spanning software, marketing, manufacturing, and events. A driven entrepreneur and lifelong builder, he brings an exceptional eye for detail and a bold strategic vision to every venture—turning ambitious ideas into enduring enterprises.
                       </p>
                     </div>
                   )}
@@ -502,10 +490,10 @@ export default function App() {
                   {activeTab === 'vision' && (
                     <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light">
                       <p>
-                        To become a premier, full-service wedding photography studio that offers end-to-end creative solutions for clients around the world.
+                        To build a world-class group of companies that sets the benchmark for innovation, quality, and lasting impact across every industry it enters.
                       </p>
                       <p>
-                        At Zero Gravity Photography, we strive to combine the talent of passionate professionals with the latest technology to produce visual content that deeply resonates with our audience.
+                        At ZeroGravity Group, we back exceptional people and ideas—combining capital, talent, and technology to create businesses that lead their markets and stand the test of time.
                       </p>
                     </div>
                   )}
@@ -513,10 +501,10 @@ export default function App() {
                   {activeTab === 'mission' && (
                     <div className="space-y-5 text-ink-muted text-sm leading-relaxed font-light font-sans">
                       <p>
-                        Our mission is to elevate creative storytelling by offering personalized photography experiences that authentically reflect each client’s personality and emotion.
+                        Our mission is to architect future-ready enterprises by pairing entrepreneurial ambition with operational excellence and long-term thinking.
                       </p>
                       <p>
-                        We aim to capture natural expressions and unforgettable moments through our photography and videography services—preserving every detail and emotion to create memories that last a lifetime.
+                        We aim to empower founders and teams to do their best work—scaling ventures responsibly, delivering real value to customers, and building a legacy that outlasts any single milestone.
                       </p>
                     </div>
                   )}
