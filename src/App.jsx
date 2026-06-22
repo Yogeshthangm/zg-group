@@ -365,7 +365,7 @@ export default function App() {
         {/* Bottom Social Links & Copyright */}
         <div className="flex flex-col items-center gap-4 text-ink-subtle">
           <div className="w-4 h-[1px] bg-line-strong"></div>
-          <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="hover:text-brand-red transition-colors text-xs font-semibold uppercase tracking-wider -rotate-90 origin-center my-6 whitespace-nowrap cursor-pointer">
+          <a href="https://www.linkedin.com/in/ajayben/" target="_blank" rel="noreferrer" className="hover:text-brand-red transition-colors text-xs font-semibold uppercase tracking-wider -rotate-90 origin-center my-6 whitespace-nowrap cursor-pointer">
             LINKEDIN
           </a>
         </div>
