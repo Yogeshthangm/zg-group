@@ -21,6 +21,7 @@ import {
   Moon,
   Monitor
 } from 'lucide-react';
+import ajayHero from './assets/ajay_webp.webp';
 
 // Section Definitions
 const SECTIONS = [
@@ -412,15 +413,11 @@ export default function App() {
 
             {/* Right Panel: Portrait matching Ramsay visual style */}
             <div className="panel-right split-transition bg-panel-2 relative flex items-center justify-center overflow-hidden">
-              {/* Dark vignette gradient to blend image into background */}
-              <div className="absolute inset-0 bg-gradient-to-r from-vignette via-vignette/50 to-transparent z-10 hidden md:block"></div>
-              <div className="absolute inset-0 bg-gradient-to-t from-vignette via-transparent to-transparent z-10 md:hidden"></div>
-
-              {/* Executive Image */}
+              {/* Executive Image (no overlay) */}
               <img
-                src="/md_hero_portrait.jpg"
+                src={ajayHero}
                 alt="Ajay, Founder & Managing Director of ZeroGravity Group"
-                className="absolute inset-0 w-full h-full object-cover object-[80%_center] transition-all duration-1000 scale-102"
+                className="absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 scale-102"
               />
 
               {/* Editorial bottom detail overlay */}

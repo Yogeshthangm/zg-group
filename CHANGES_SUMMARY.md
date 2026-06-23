@@ -26,3 +26,4 @@
 - Removed the office directory (address + map) from the Contact section; the contact form is now centered.
 - Renamed the contact form's message field to "Subject".
 - Set the header wordmark to all caps: ZERO GRAVITY GROUP.
+- Replaced the hero portrait with the new image and removed the overlay on it (both dark and light).
