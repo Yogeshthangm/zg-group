@@ -27,3 +27,12 @@
 - Renamed the contact form's message field to "Subject".
 - Set the header wordmark to all caps: ZERO GRAVITY GROUP.
 - Replaced the hero portrait with the new image and removed the overlay on it (both dark and light).
+
+## Mobile
+
+- On phones, the site now scrolls normally from top to bottom through every section, instead of having to open the menu to switch pages. The menu still jumps straight to a section, and the header stays pinned at the top while you scroll.
+- On phones, the hero section shows the photo first and the text/button below it.
+- Fixed the hero photo getting cut off by the header on phones.
+- On phones, the hero photo, heading, and button are now centered.
+- Fixed the page not scrolling all the way to the bottom on phones — the contact form and Send button are now fully visible.
+- The desktop layout is unchanged.

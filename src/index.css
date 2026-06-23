@@ -350,3 +350,98 @@ h1, h2, h3, h4, .font-serif {
   overflow: hidden !important;
   overflow-y: hidden !important;
 }
+
+/* ===================================================================
+   Mobile (≤768px): normal continuous page scrolling.
+   The desktop design is a paged, one-section-at-a-time split screen.
+   On phones/tablets that's replaced by a regular scrolling page — every
+   section is rendered and stacked top-to-bottom, the menu jumps to a
+   section, and the header stays pinned. Desktop is left untouched.
+   =================================================================== */
+@media (max-width: 768px) {
+  /* Unlock page scrolling (overrides the desktop scroll-lock on body). */
+  html,
+  body {
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    height: auto !important;
+    width: 100% !important;
+  }
+
+  #root,
+  main {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Pin the header so the logo + menu button stay reachable while scrolling. */
+  header {
+    position: fixed !important;
+  }
+
+  /* Offset the page below the fixed header so the hero image (now the first
+     thing on screen) isn't cropped underneath it. 70px == header height.
+     Bottom padding leaves room so the last section's form/button can always be
+     scrolled clear of the mobile browser's bottom toolbar (+ the home-bar safe
+     area on notched devices). */
+  body {
+    padding-top: 70px !important;
+    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+  }
+
+  /* Each section flows in the document instead of being absolutely stacked and
+     hidden — all rendered sections are visible, one after another. */
+  .section-container,
+  .section-container.state-active,
+  .section-container.state-entering,
+  .section-container.state-exiting {
+    position: static !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important;
+    left: 0 !important;
+    top: 0 !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+    scroll-margin-top: 84px; /* land below the fixed header on menu jumps */
+  }
+
+  /* Panels become plain stacked blocks: no paged transforms, natural height. */
+  .panel-left,
+  .panel-right {
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  /* Image panels carry their photo as an absolutely-positioned layer, so they
+     have no in-flow height — give them one so the picture is actually visible. */
+  .panel-media {
+    min-height: 56vh !important;
+    overflow: hidden !important;
+  }
+
+  /* The hero text panel is normally overflow:hidden for the paged view; let it
+     show its full content in the scroll flow (image panel keeps .panel-media). */
+  #hero .panel-left {
+    overflow: visible !important;
+    overflow-y: visible !important;
+  }
+
+  /* Hero on mobile: show the portrait first, then the text/CTA below it
+     (the image panel is later in the DOM, so reverse the stacking order). */
+  #hero {
+    flex-direction: column-reverse !important;
+  }
+
+  /* Center the portrait's subject on mobile — the photo is composed with the
+     man on the right with empty space at left, so nudge the crop rightward to
+     bring him into the middle of the frame. */
+  #hero .panel-media img {
+    object-position: 78% center !important;
+  }
+}

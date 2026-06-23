@@ -100,6 +100,20 @@ const COMPANIES = [
 
 // Testimonials Data removed
 
+// True only when the panel can actually scroll further in `dir` (+1 = down, -1 = up).
+// Respects overflow-y, so non-scrolling panels (e.g. the hero, which is
+// overflow:hidden) page to the next section immediately instead of trapping the
+// gesture. Used by the desktop wheel navigation handler.
+function panelCanScroll(el, dir) {
+  if (!el) return false;
+  const oy = getComputedStyle(el).overflowY;
+  if (oy !== 'auto' && oy !== 'scroll') return false;
+  if (el.scrollHeight <= el.clientHeight + 1) return false;
+  return dir > 0
+    ? el.scrollTop + el.clientHeight < el.scrollHeight - 1
+    : el.scrollTop > 0;
+}
+
 export default function App() {
   // Navigation State — honor a ?section= deep-link on first load, else 'hero'.
   const initialSection = (() => {
@@ -117,8 +131,25 @@ export default function App() {
     isTransitioning: false
   });
 
-  // Interactive Component States
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Viewport mode. Mobile (<768px) is a normal continuous-scroll page with every
+  // section stacked; desktop keeps the paged, one-section-at-a-time split view.
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  );
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  // Interactive Component States.
+  // On mobile the sidebar starts tucked away so the page scrolls freely; the
+  // header menu button opens it for jumping straight to a section.
+  // On desktop (md+) it's always shown, so default it open there.
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    if (typeof window !== 'undefined') return window.innerWidth >= 768;
+    return true;
+  });
   const [activeCompany, setActiveCompany] = useState(COMPANIES[0]);
   const [activeTab, setActiveTab] = useState('journey'); // For About page
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -174,6 +205,13 @@ export default function App() {
 
   // Transition controller
   const navigateTo = (targetId) => {
+    // Mobile: the whole page scrolls, so just smooth-scroll to the section.
+    if (isMobile) {
+      const el = document.getElementById(targetId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setActiveSection(targetId);
+      return;
+    }
     if (transitionState.isTransitioning || targetId === transitionState.active) return;
 
     setTransitionState({
@@ -225,17 +263,15 @@ export default function App() {
 
   useEffect(() => {
     const onWheel = (e) => {
+      // Desktop only — on mobile the page scrolls natively (continuous scroll).
+      if (window.innerWidth < 768) return;
       // Ignore tiny/horizontal scrolls (trackpad sideways gestures).
       if (Math.abs(e.deltaY) < 4 || Math.abs(e.deltaY) <= Math.abs(e.deltaX)) return;
 
       // Edge-aware: if the panel under the cursor can still scroll in this
       // direction, let it scroll internally instead of changing sections.
       const panel = e.target.closest ? e.target.closest('.panel-left, .panel-right') : null;
-      if (panel && panel.scrollHeight > panel.clientHeight + 1) {
-        const atTop = panel.scrollTop <= 0;
-        const atBottom = panel.scrollTop + panel.clientHeight >= panel.scrollHeight - 1;
-        if ((e.deltaY > 0 && !atBottom) || (e.deltaY < 0 && !atTop)) return;
-      }
+      if (panelCanScroll(panel, e.deltaY > 0 ? 1 : -1)) return;
 
       e.preventDefault();
 
@@ -255,8 +291,31 @@ export default function App() {
     };
   }, []);
 
-  // Check if a section should be rendered in the DOM
+  // ---- Mobile scroll-spy: highlight whichever section is centered in view ----
+  // Mobile scrolls the page like any normal website; this just keeps the menu's
+  // active state in sync as you scroll. Desktop uses the paged transition state.
+  useEffect(() => {
+    if (!isMobile) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) setActiveSection(entry.target.id);
+        });
+      },
+      { rootMargin: '-50% 0px -50% 0px', threshold: 0 }
+    );
+    SECTIONS.forEach((s) => {
+      const el = document.getElementById(s.id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [isMobile]);
+
+  // Check if a section should be rendered in the DOM. On mobile every section is
+  // rendered so the page scrolls through all of them; desktop renders only the
+  // active/transitioning ones for the paged experience.
   const shouldRender = (sectionId) => {
+    if (isMobile) return true;
     return (
       transitionState.active === sectionId ||
       transitionState.exiting === sectionId ||
@@ -368,7 +427,7 @@ export default function App() {
           <section id="hero" className={`section-container ${getSectionClass('hero')}`}>
             {/* Left Panel: Ramsay typography + editorial text */}
             <div className="panel-left split-transition flex flex-col justify-start pt-28 pb-12 px-8 md:px-20 lg:px-24 bg-panel bg-grid-pattern overflow-hidden">
-              <div className="max-w-xl my-auto">
+              <div className="max-w-xl my-auto text-center md:text-left">
                 {/* Staggered Serif Word Reveals (IvyPresto heading style) */}
                 <div className="mb-6 font-serif italic">
                   <div className="line-mask block text-4xl md:text-7xl lg:text-8xl tracking-tight text-ink mb-2 leading-none">
@@ -393,13 +452,13 @@ export default function App() {
                 <h1 className="sr-only">ZEROGRAVITY GROUP</h1>
 
                 {/* Supporting Text: Executive philosophy */}
-                <p className="text-ink-muted text-lg md:text-xl leading-relaxed mb-10 font-light max-w-lg animate-fade-in stagger-3">
+                <p className="text-ink-muted text-lg md:text-xl leading-relaxed mb-10 font-light max-w-lg mx-auto md:mx-0 animate-fade-in stagger-3">
                   I build what others envision
                 </p>
 
 
                 {/* CTA Buttons - Ramsay style play button and Divergent explore button */}
-                <div className="flex flex-wrap items-center gap-6 opacity-0 animate-fade-in stagger-4">
+                <div className="flex flex-wrap items-center justify-center md:justify-start gap-6 opacity-0 animate-fade-in stagger-4">
                   <button
                     onClick={() => navigateTo('companies')}
                     className="group flex items-center gap-3 bg-brand-red hover:bg-brand-red/90 text-on-accent font-outfit text-sm font-bold uppercase tracking-wider px-8 py-4.5 rounded-none transition-all duration-300 hover:shadow-lg hover:shadow-brand-red/20 border border-brand-red cursor-pointer"
@@ -412,7 +471,7 @@ export default function App() {
             </div>
 
             {/* Right Panel: Portrait matching Ramsay visual style */}
-            <div className="panel-right split-transition bg-panel-2 relative flex items-center justify-center overflow-hidden">
+            <div className="panel-right panel-media split-transition bg-panel-2 relative flex items-center justify-center overflow-hidden">
               {/* Executive Image (no overlay) */}
               <img
                 src={ajayHero}
@@ -434,7 +493,7 @@ export default function App() {
         {shouldRender('about') && (
           <section id="about" className={`section-container ${getSectionClass('about')}`}>
             {/* Left Panel: Profile Image */}
-            <div className="panel-left split-transition bg-panel relative flex items-center justify-center">
+            <div className="panel-left panel-media split-transition bg-panel relative flex items-center justify-center">
               <div className="absolute inset-0 bg-gradient-to-l from-vignette via-vignette/30 to-transparent z-10 hidden md:block"></div>
               <img
                 src="/md_about.jpg"
