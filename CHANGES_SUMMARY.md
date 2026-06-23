@@ -14,7 +14,7 @@
 
 ## Latest updates
 
-- Added a theme switcher in the header — Light, Dark, or Auto (Auto follows your device's setting). The site opens in Light by default.
+- Added a theme switcher in the header — Light, Dark, or Auto (Auto follows your device's setting). The site opens in Dark by default.
 - Renamed the company categories to Software Development, Marketing, Manufacturing, and Events.
 - Fixed the /home-2 page so it loads correctly on the live (Vercel) site.
 - Pointed the LinkedIn button to the founder's profile.

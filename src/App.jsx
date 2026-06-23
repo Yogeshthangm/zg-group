@@ -158,7 +158,7 @@ export default function App() {
   // Staggered words for Hero section
   const [heroStaggerVisible, setHeroStaggerVisible] = useState(false);
 
-  // Theme mode: 'light' (default) | 'dark' | 'system' (follow the browser/OS).
+  // Theme mode: 'dark' (default) | 'light' | 'system' (follow the browser/OS).
   // Persisted; ?theme= still overrides for previews. Toggle cycles light → dark → auto.
   const [themeMode, setThemeMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -167,7 +167,7 @@ export default function App() {
       const stored = window.localStorage.getItem('zg-theme');
       if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
     }
-    return 'light';
+    return 'dark';
   });
 
   useEffect(() => {
