@@ -349,7 +349,7 @@ export default function App() {
       <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-canvas/60 backdrop-blur-lg border-b border-line/70 shadow-sm pointer-events-auto">
         <div className="flex items-center gap-3">
           <img src="/logo-zerogravity.webp" alt="ZeroGravity Group logo" className="w-8 h-8 object-contain" />
-          <span className="font-serif text-xl tracking-wide text-ink">ZERO GRAVITY GROUP</span>
+          <span className="font-serif site-wordmark text-xl tracking-wide text-ink">ZERO GRAVITY GROUP</span>
         </div>
 
         {/* Right-side controls cluster */}

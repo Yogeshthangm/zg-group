@@ -345,6 +345,13 @@ h1, h2, h3, h4, .font-serif {
   font-style: inherit !important;
 }
 
+/* Header wordmark only: keep the serif but upright — drop the cursive/italic
+   display style that the rest of the headings use. */
+header .site-wordmark {
+  font-style: normal !important;
+  font-weight: 500 !important;
+}
+
 /* Disable scroll on hero panels explicitly */
 #hero .panel-left, #hero .panel-right {
   overflow: hidden !important;
