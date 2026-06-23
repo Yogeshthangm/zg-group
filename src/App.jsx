@@ -173,7 +173,7 @@ export default function App() {
     if (typeof window !== 'undefined') {
       const urlTheme = new URLSearchParams(window.location.search).get('theme');
       if (urlTheme === 'light' || urlTheme === 'dark') return urlTheme;
-      const stored = window.localStorage.getItem('zg-theme');
+      const stored = window.localStorage.getItem('zg-theme-v2');
       if (stored === 'light' || stored === 'dark' || stored === 'system') return stored;
     }
     return 'dark';
@@ -187,7 +187,7 @@ export default function App() {
       root.classList.toggle('theme-light', !isDark);
     };
     apply();
-    window.localStorage.setItem('zg-theme', themeMode);
+    window.localStorage.setItem('zg-theme-v2', themeMode);
     // In system mode, react live to OS light/dark changes.
     if (themeMode === 'system') {
       mql.addEventListener('change', apply);
