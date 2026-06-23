@@ -32,6 +32,15 @@ const SECTIONS = [
   { id: 'contact', name: 'Contact', icon: Mail }
 ];
 
+// Short, readable labels for the mobile text dropdown (desktop uses the icon rail).
+const MENU_LABELS = {
+  hero: 'Home',
+  about: 'About',
+  companies: 'Companies',
+  achievements: 'Achievements',
+  contact: 'Contact'
+};
+
 // Companies Data
 const COMPANIES = [
   {
@@ -377,8 +386,8 @@ export default function App() {
         </div>
       </header>
 
-      {/* 2. Fixed Left Sidebar Navigation (Divergent template inspiration) */}
-      <nav className={`fixed top-0 left-0 h-full w-[80px] bg-sidebar border-r border-line flex flex-col justify-between items-center py-6 z-40 transition-transform duration-300 md:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* 2. Fixed Left Sidebar Navigation — desktop only (mobile uses the dropdown below) */}
+      <nav className="hidden md:flex fixed top-0 left-0 h-full w-[80px] bg-sidebar border-r border-line flex-col justify-between items-center py-6 z-40">
 
         {/* Top Brand Logo Container */}
         <div className="flex flex-col items-center gap-1 cursor-pointer" onClick={() => navigateTo('hero')}>
@@ -418,6 +427,51 @@ export default function App() {
           </a>
         </div>
       </nav>
+
+      {/* 2b. Mobile text dropdown menu (replaces the icon rail on phones) */}
+      {sidebarOpen && (
+        <div className="md:hidden fixed inset-0 top-[70px] z-40">
+          {/* tap-away backdrop */}
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="absolute inset-0 bg-black/50 cursor-default"
+            onClick={() => setSidebarOpen(false)}
+          />
+          {/* dropdown panel */}
+          <nav className="relative z-10 bg-sidebar border-b border-line shadow-xl">
+            <ul className="flex flex-col py-2">
+              {SECTIONS.map((sec) => {
+                const isCurrent = activeSection === sec.id;
+                return (
+                  <li key={sec.id}>
+                    <button
+                      onClick={() => {
+                        navigateTo(sec.id);
+                        setSidebarOpen(false);
+                      }}
+                      className={`w-full text-left px-6 py-4 text-sm font-outfit font-bold uppercase tracking-wider border-l-2 transition-colors cursor-pointer ${isCurrent ? 'border-brand-red text-brand-red bg-brand-red/5' : 'border-transparent text-ink hover:text-brand-red'}`}
+                    >
+                      {MENU_LABELS[sec.id] || sec.name}
+                    </button>
+                  </li>
+                );
+              })}
+              <li className="border-t border-line mt-2 pt-2">
+                <a
+                  href="https://www.linkedin.com/in/ajayben/"
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => setSidebarOpen(false)}
+                  className="block px-6 py-4 text-sm font-outfit font-bold uppercase tracking-wider text-ink-muted hover:text-brand-red transition-colors"
+                >
+                  LinkedIn
+                </a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      )}
 
       {/* 3. Main Fullscreen Content Container */}
       <main className="relative w-full h-screen overflow-hidden">
