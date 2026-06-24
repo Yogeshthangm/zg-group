@@ -1,12 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Inter:wght@300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
 @theme {
-  /* Premium editorial pairing: Fraunces (display serif) + Inter (UI/body sans).
-     --font-outfit kept as an alias so existing font-outfit utilities map to Inter. */
-  --font-serif: "Fraunces", "EB Garamond", serif;
-  --font-sans: "Inter", sans-serif;
-  --font-outfit: "Inter", sans-serif;
+  /* Site pairing: DM Sans (body/UI) + Poppins (headings & display), upright only.
+     --font-serif keeps its name but now maps to Poppins (used by every heading);
+     --font-outfit (labels/buttons/stats) also maps to Poppins for display accents. */
+  --font-serif: "Poppins", sans-serif;
+  --font-sans: "DM Sans", sans-serif;
+  --font-outfit: "Poppins", sans-serif;
 
   --color-brand-red: #A00058;
   /* Brand pink — default accent */
@@ -131,7 +132,7 @@ html.variant-orange {
 body {
   background-color: var(--c-canvas);
   color: var(--c-ink);
-  font-family: "Outfit", sans-serif;
+  font-family: "DM Sans", sans-serif;
   overflow: hidden;
   height: 100vh;
   width: 100vw;
@@ -326,16 +327,15 @@ body {
 
 /* Global Typography Overrides */
 body {
-  font-family: 'Inter', sans-serif !important;
+  font-family: 'DM Sans', sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.011em; /* Inter reads tighter and more premium */
+  letter-spacing: -0.006em;
 }
 
 h1, h2, h3, h4, .font-serif {
-  font-family: 'Fraunces', 'EB Garamond', serif !important;
-  font-style: italic !important;
-  font-weight: 300 !important; /* Light italic display */
+  font-family: 'Poppins', sans-serif !important;
+  font-style: normal !important; /* upright only — no italics anywhere on the site */
   letter-spacing: -0.01em;
 }
 
@@ -345,11 +345,13 @@ h1, h2, h3, h4, .font-serif {
   font-style: inherit !important;
 }
 
-/* Header wordmark only: keep the serif but upright — drop the cursive/italic
-   display style that the rest of the headings use. */
-header .site-wordmark {
-  font-style: normal !important;
-  font-weight: 500 !important;
+/* Brand logo: the artwork has black text, which is invisible on the dark theme
+   (the default). Render it white there; show the original colours on light. */
+.brand-logo {
+  filter: brightness(0) invert(1);
+}
+html.theme-light .brand-logo {
+  filter: none;
 }
 
 /* Disable scroll on hero panels explicitly */

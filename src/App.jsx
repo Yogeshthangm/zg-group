@@ -22,6 +22,7 @@ import {
   Monitor
 } from 'lucide-react';
 import ajayHero from './assets/ajay_webp.webp';
+import zgLogo from './assets/zg-group-logo.webp';
 
 // Section Definitions
 const SECTIONS = [
@@ -356,9 +357,8 @@ export default function App() {
 
       {/* 1. Header/Logo overlay matching Ramsay style */}
       <header className="absolute top-0 right-0 z-50 flex items-center justify-between w-full h-[70px] px-6 md:px-12 md:pl-32 bg-canvas/60 backdrop-blur-lg border-b border-line/70 shadow-sm pointer-events-auto">
-        <div className="flex items-center gap-3">
-          <img src="/logo-zerogravity.webp" alt="ZeroGravity Group logo" className="w-8 h-8 object-contain" />
-          <span className="font-serif site-wordmark text-xl tracking-wide text-ink">ZERO GRAVITY GROUP</span>
+        <div className="flex items-center">
+          <img src={zgLogo} alt="ZeroGravity Group" className="brand-logo h-9 w-auto object-contain" />
         </div>
 
         {/* Right-side controls cluster */}
@@ -646,7 +646,7 @@ export default function App() {
                         className={`w-full text-left p-6 border transition-all duration-300 cursor-pointer flex items-center justify-between ${isSelected ? 'border-brand-red bg-brand-red/5' : 'border-line bg-surface/20 hover:border-line-strong'}`}
                       >
                         <div>
-                          <h3 className="text-ink font-bold text-lg md:text-xl">{company.name}</h3>
+                          <h3 className="text-ink font-bold text-lg md:text-xl uppercase tracking-wide">{company.name}</h3>
                         </div>
                         <div className={`w-8 h-8 rounded-full border flex items-center justify-center transition-all ${isSelected ? 'border-brand-red text-on-accent bg-brand-red' : 'border-line-strong text-ink-subtle group-hover:border-ink-subtle'}`}>
                           <ChevronRight size={16} />
@@ -668,7 +668,7 @@ export default function App() {
                     </div>
                     <div>
                       <h4 className="text-ink text-xs uppercase tracking-widest font-outfit font-bold">PORTFOLIO CASE STUDY</h4>
-                      <h3 className="text-ink text-2xl font-black tracking-tight">{activeCompany.name}</h3>
+                      <h3 className="text-ink text-2xl font-black tracking-tight uppercase">{activeCompany.name}</h3>
                     </div>
                   </div>
 
