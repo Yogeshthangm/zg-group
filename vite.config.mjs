@@ -8,5 +8,10 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  preview: {
+    host: true,
+    port: 3033,
+    allowedHosts: ['zerogravity.group', '.zerogravity.group'],
+  },
 })
 
